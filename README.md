@@ -132,3 +132,26 @@ hasta reponer créditos. Sólo se puede actualizar con `npx netlify-cli@latest d
 
 Scripts de re-codificación: `_optimizar.sh` (primera pasada) y `_optimizar2.sh` (segunda, la aplicada).
 Mantienen keyframes densos (`-g 12` a `-g 18`) para que el scroll avance el video con fluidez.
+
+
+---
+
+## 🧩 Enlaces con plan preseleccionado (sep-2026)
+
+En la sección **Planes y precios** de la portada, cada casilla es un **enlace real** al catálogo
+(antes eran `div` que parecían botones pero no hacían nada — confundía a la gente).
+
+- Portada: `<a class="plan" href="catalogo.html?plan=G1">…</a>` — la clave del plan va en `PLANS[].k`.
+- Catálogo: al cargar lee `?plan=` (y opcionalmente `&ruta=`) con `URLSearchParams`, deja el plan
+  **seleccionado** y muestra un aviso: «Plan elegido: … · ahora elige tu ruta».
+
+Claves de plan en el catálogo: `G1` Básico · `G2` Refrigerio · `G3` Mazamorrada ·
+`G4` Con paradas · `G5` Fiesta/Grupal. Claves de ruta: `r1`…`r9`.
+
+**Ejemplos:** `catalogo.html?plan=G3` · `catalogo.html?plan=G4&ruta=r2`
+
+> Si algún día se agrega un plan nuevo, hay que añadirlo **en los dos archivos**: en `PLANS` de
+> `index.html` (con su `k`) y en `PLANS` de `catalogo.html` (con la misma clave).
+
+En teléfono (`max-width:640px`) la rejilla de planes va a **una casilla por fila** para que se lea
+y se toque bien.
