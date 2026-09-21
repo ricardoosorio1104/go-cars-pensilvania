@@ -213,6 +213,17 @@ h1,h2,h3,h4,.osw{font-family:'Oswald Local','Oswald',Impact,sans-serif;text-tran
 .p-price small{display:block;font-family:'Poppins Local','Poppins',sans-serif;font-weight:400;text-transform:none;
   font-size:11px;color:inherit;opacity:.6;margin-top:6px;white-space:nowrap}
 .plan.hot .p-price{color:var(--orange)}
+/* Las casillas de plan son ENLACES al catálogo */
+a.plan{cursor:pointer;text-decoration:none;color:inherit}
+a.plan:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+a.plan .p-price{margin-top:auto;padding-top:16px}
+a.plan .p-go{margin-top:12px;padding-top:12px;border-top:1px solid rgba(30,35,39,.13);
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font-family:'Oswald Local','Oswald',sans-serif;text-transform:uppercase;letter-spacing:.12em;
+  font-size:11.5px;font-weight:600;color:var(--orange)}
+a.plan.hot .p-go{color:var(--cream);border-top-color:rgba(244,238,227,.28)}
+a.plan .p-go i{font-style:normal;font-size:15px;line-height:1;transition:transform .25s}
+a.plan:hover .p-go i,a.plan:focus-visible .p-go i{transform:translateX(5px)}
 .planes-note{margin-top:26px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between;
   background:var(--cream);border:1px dashed rgba(20,68,46,.3);border-radius:16px;padding:18px 22px}
 .planes-note p{font-size:13.6px;max-width:70ch}
@@ -377,7 +388,7 @@ footer ul{list-style:none;display:grid;gap:9px}
 @media (max-width:640px){
   .feats{grid-template-columns:1fr}
   .rutas-grid{grid-template-columns:1fr}
-  .planes-grid{grid-template-columns:repeat(2,1fr)}
+  .planes-grid{grid-template-columns:1fr}   /* en teléfono, una casilla por fila (legible y clicable) */
   .cont-grid,.info-strip,.foot-grid,.social-row{grid-template-columns:1fr}
   .gal-grid{grid-template-columns:repeat(2,1fr)}
   .hero-badges span{font-size:10.5px}
@@ -554,7 +565,8 @@ footer ul{list-style:none;display:grid;gap:9px}
       <div class="kicker">Planes y precios</div>
       <h2 class="h2">Elige cómo vivir la ruta</h2>
       <p class="lead">Desde 45 minutos de aventura hasta medio día completo con degustación de productos locales.
-        Precio por car · <b>1 persona</b> (nuestros cars son monoplaza).</p>
+        Precio por car · <b>1 persona</b> (nuestros cars son monoplaza).<br>
+        <b>Toca el plan que te guste</b> y te llevamos al catálogo para apartarlo.</p>
     </div>
     <div class="planes-grid" id="planesGrid"></div>
     <div class="planes-note rv">
@@ -775,11 +787,11 @@ const MSG = encodeURIComponent('Hola GO CARS Pensilvania 🏁 quiero informació
 const MSG_ADV = encodeURIComponent('Hola GO CARS Pensilvania 🤝 todavía no sé qué plan ni ruta elegir. ¿Me ayudan con una asesoría?');
 
 const PLANS = [
-  {n:'Plan Básico',          t:'45 min',    d:'recorrido de aventura', p:85000},
-  {n:'Plan Refrigerio',      t:'60 min',    d:'refrigerio en el camino', p:110000},
-  {n:'Plan Mazamorrada',     t:'80 min',    d:'parada con mazamorra regional', p:140000},
-  {n:'Plan con paradas',     t:'2 horas',   d:'degustación de productos locales y parada en miradores naturales', p:180000, hot:true},
-  {n:'Plan Fiesta / Grupal', t:'Medio día', d:'experiencia completa', p:700000}
+  {k:'G1', n:'Plan Básico',          t:'45 min',    d:'recorrido de aventura', p:85000},
+  {k:'G2', n:'Plan Refrigerio',      t:'60 min',    d:'refrigerio en el camino', p:110000},
+  {k:'G3', n:'Plan Mazamorrada',     t:'80 min',    d:'parada con mazamorra regional', p:140000},
+  {k:'G4', n:'Plan con paradas',     t:'2 horas',   d:'degustación de productos locales y parada en miradores naturales', p:180000, hot:true},
+  {k:'G5', n:'Plan Fiesta / Grupal', t:'Medio día', d:'experiencia completa', p:700000}
 ];
 
 const ROUTES = [
@@ -851,13 +863,15 @@ const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ================== RENDER ================== */
 $('#planesGrid').innerHTML = PLANS.map(p=>`
-  <div class="plan ${p.hot?'hot':''}">
+  <a class="plan ${p.hot?'hot':''}" href="catalogo.html?plan=${p.k}"
+     title="Reservar el ${p.n} en el catálogo digital">
     ${p.hot?'<span class="flag">Más recomendado</span>':''}
     <div class="p-name">${p.n}</div>
     <div class="p-dur">${p.t}</div>
     <div class="p-desc">${p.d}</div>
     <div class="p-price">${fmt(p.p)}<small>por car · 1 persona</small></div>
-  </div>`).join('');
+    <span class="p-go">Reservar este plan <i aria-hidden="true">→</i></span>
+  </a>`).join('');
 
 $('#rutasGrid').innerHTML = ROUTES.map((r,i)=>`
   <button class="ruta rv" data-r="${i}">

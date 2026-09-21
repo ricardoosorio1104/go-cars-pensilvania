@@ -704,7 +704,23 @@ $('#send').onclick=()=>{
   });
 };
 
+/* Si llegas desde la sección "Planes y precios" del sitio, el plan viene elegido.
+   Enlaces válidos: catalogo.html?plan=G3   y opcionalmente   &ruta=r5 */
+(function(){
+  try{
+    const qs = new URLSearchParams(location.search);
+    const p = qs.get('plan'), r = qs.get('ruta');
+    if(p && PLANS[p]) plan = p;
+    if(r && ROUTES[r]) route = r;
+  }catch(e){}
+})();
+
 renderPlans();renderRoutes();check();
+
+/* Confirmación breve cuando el plan llegó preseleccionado desde el sitio */
+if(plan){
+  setTimeout(function(){ toast('Plan elegido: ' + PLANS[plan].n + ' · ahora elige tu ruta'); }, 600);
+}
 
 // default fecha = hoy
 const d=new Date();$('#fecha').value=d.toISOString().slice(0,10);
