@@ -68,3 +68,50 @@ Todo lo editable está en `index.html`:
 - Videos: H.264, 720×1280 (vertical), 30 fps, sin audio, `faststart`. Peso total ≈ 20 MB; los clips del film usan **carga diferida** y se reproducen de a uno.
 - El sitio respeta `prefers-reduced-motion` (desactiva el parallax y las animaciones de scroll).
 - Incluye datos estructurados JSON-LD (`LocalBusiness`) para SEO local.
+
+
+---
+
+## 🌐 Publicado en GitHub Pages (hosting principal, sep-2026)
+
+Sitio en vivo: **https://ricardoosorio1104.github.io/go-cars-pensilvania/**
+
+Repositorio: https://github.com/ricardoosorio1104/go-cars-pensilvania (público)
+
+### Cómo publicar un cambio (2 comandos)
+
+```bash
+cd C:/Users/ricar/go-cars-pensilvania/sitio-web
+git add -A && git commit -m "describe el cambio"
+git push
+```
+
+GitHub Pages reconstruye solo en ~1 minuto. **No hay límite de ancho de banda** (a diferencia
+de Netlify, que bloqueó los despliegues por créditos agotados).
+
+### Puntos importantes de este hosting
+
+- **`.nojekyll`** en la raíz: obliga a GitHub a servir los archivos tal cual (sin procesarlos con Jekyll).
+- **El catálogo detecta el hosting**: si NO está en Netlify, llama directo al Apps Script (JSONP)
+  y se salta el puente `/api/exec`. Es lo que hace que las reservas funcionen en GitHub Pages.
+- Los archivos `_headers` y `_redirects` son exclusivos de Netlify; aquí se ignoran.
+- **La insignia "Powered by Netlify" no existe en GitHub Pages** (no hay que ocultarla).
+- El video de portada se sirve con soporte de rangos (HTTP 206), necesario para que el video
+  avance con el scroll. Verificado.
+
+### Netlify queda como respaldo
+
+https://gocarspensilvania.netlify.app — sigue en línea, pero **no acepta despliegues nuevos**
+hasta reponer créditos. Sólo se puede actualizar con `npx netlify-cli@latest deploy --prod --dir=.`
+
+### Peso de los videos (optimizados sep-2026)
+
+| Archivo | Tamaño | Uso |
+|---|---|---|
+| ruta-cabana-2.mp4 (640x1138) | 2,9 MB | Portada (carga al entrar) |
+| ruta-cabana-3.mp4 (540x960) | 3,6 MB | Clip del film (carga diferida) |
+| ruta-cabana-1.mp4 (540x960) | 6,3 MB | Clip del film (carga diferida) |
+| **Total** | **12,8 MB** | (antes 26,8 MB) |
+
+Scripts de re-codificación: `_optimizar.sh` (primera pasada) y `_optimizar2.sh` (segunda, la aplicada).
+Mantienen keyframes densos (`-g 12` a `-g 18`) para que el scroll avance el video con fluidez.
