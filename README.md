@@ -74,9 +74,26 @@ Todo lo editable está en `index.html`:
 
 ## 🌐 Publicado en GitHub Pages (hosting principal, sep-2026)
 
-Sitio en vivo: **https://ricardoosorio1104.github.io/go-cars-pensilvania/**
+### ✅ Sitio en vivo con dominio propio: **https://gocarspensilvania.com**
+
+También responde en `https://www.gocarspensilvania.com` (redirige al principal) y la URL
+`https://ricardoosorio1104.github.io/go-cars-pensilvania/` redirige al dominio propio.
 
 Repositorio: https://github.com/ricardoosorio1104/go-cars-pensilvania (público)
+
+### Dominio propio (comprado sep-2026)
+
+- **Dominio:** `gocarspensilvania.com` — registrado en **Cloudflare Registrar** (a costo, sin margen).
+  Vence **21-sep-2028** (2 años prepagados → el precio quedó congelado antes de la subida de Verisign de nov-2026).
+- **DNS (Cloudflare):** 4 registros `A` al apex → `185.199.108.153`, `.109.153`, `.110.153`, `.111.153`;
+  1 `CNAME` en `www` → `ricardoosorio1104.github.io`. **Todos con Proxy status = DNS only (nube GRIS)** —
+  con la nube naranja GitHub no puede emitir el certificado HTTPS.
+- **GitHub Pages:** custom domain `gocarspensilvania.com` + **Enforce HTTPS** activado. El archivo `CNAME`
+  en la raíz del repo (lo crea GitHub) es lo que mantiene el dominio amarrado al sitio.
+- **Certificado:** emitido automáticamente por GitHub (Let's Encrypt), estado `approved`.
+
+> ⚠️ Si algún día se cambia el proxy de Cloudflare a "Proxied" (nube naranja), verificar primero que
+> GitHub siga renovando el certificado; el flujo seguro es dejar los registros en "DNS only".
 
 ### Cómo publicar un cambio (2 comandos)
 
