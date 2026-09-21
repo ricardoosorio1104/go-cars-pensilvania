@@ -599,6 +599,33 @@ function fmt12(h){
 }
 function ocultarMensajes(){ $('#aviso').classList.remove('show'); $('#okMsg').classList.remove('show'); }
 
+/* Respaldo de PRIMER NIVEL: copia de la disponibilidad guardada cada 20 minutos en el
+   propio dominio (datos/disponibilidad.json). Funciona aunque el navegador no pueda
+   llegar a Google (IPv6 roto, bloqueadores, navegador dentro de otra app). */
+function disponibilidadEstatica(fecha, cb){
+  try{
+    fetch('datos/disponibilidad.json?t=' + Date.now(), {cache:'no-store'})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(j){
+        const d = j && j.dias && j.dias[fecha];
+        if(!d || !d.slots){ cb(null); return; }
+        cb({ok:true, estatica:true, generado:j.generado, capacidad:d.capacidad, rest:d.rest, slots:d.slots});
+      })
+      .catch(function(){ cb(null); });
+  }catch(e){ cb(null); }
+}
+
+/* "hace 12 min" / "hace 2 horas", para avisar la antigüedad del dato guardado */
+function haceCuanto(iso){
+  try{
+    const min = Math.round((Date.now() - new Date(iso).getTime())/60000);
+    if(min < 1) return 'un momento';
+    if(min < 60) return min + ' min';
+    const h = Math.round(min/60);
+    return h + (h === 1 ? ' hora' : ' horas');
+  }catch(e){ return 'poco'; }
+}
+
 /* Horario de respaldo: cuando el navegador no deja consultar la disponibilidad en vivo
    (bloqueadores de scripts, navegador dentro de otra app, datos móviles inestables),
    NO dejamos la reserva trabada. Mostramos el horario completo y el cupo se confirma
@@ -641,10 +668,16 @@ function renderSlots(){
         return '<div class="'+cls+'" data-h="'+s.hora+'">'+fmt12(s.hora)+'<span class="cap">'+c+'</span></div>';
       }).join('')+'</div></div>';
   }
-  const avisoSin = slotsData.sinConexion ?
-    '<div class="slot-notice">📵 <b>No pudimos ver la disponibilidad en vivo desde este navegador.</b><br>'+
-    'Puedes reservar igual: elige tu hora y <b>te la confirmamos al instante por WhatsApp</b>.'+
-    '<button class="retry-btn" id="retrySlots" style="display:block;width:100%">🔄 Volver a intentar</button></div>' : '';
+  let avisoSin = '';
+  if(slotsData.sinConexion){
+    avisoSin = '<div class="slot-notice">📵 <b>No pudimos ver la disponibilidad en vivo desde este navegador.</b><br>'+
+      'Puedes reservar igual: elige tu hora y <b>te la confirmamos al instante por WhatsApp</b>.'+
+      '<button class="retry-btn" id="retrySlots" style="display:block;width:100%">🔄 Volver a intentar</button></div>';
+  } else if(slotsData.estatica){
+    avisoSin = '<div class="slot-notice">📋 <b>Horas de la agenda (guardadas hace '+haceCuanto(slotsData.generado)+').</b><br>'+
+      'Estas son las horas reales de tu calendario; <b>te confirmamos el cupo al instante por WhatsApp</b> al reservar.'+
+      '<button class="retry-btn" id="retrySlots" style="display:block;width:100%">🔄 Actualizar ahora</button></div>';
+  }
   wrap.innerHTML=avisoSin+grupo('Mañana',man)+grupo('Tarde',tar);
   wrap.querySelectorAll('.slot:not(.lleno)').forEach(function(el){
     el.onclick=function(){ hora=el.dataset.h; ocultarMensajes(); renderSlots(); check(); };
@@ -668,9 +701,17 @@ function loadSlots(intento){
     // si falla, reintenta solo (hasta 2 veces)
     // Reintenta hasta 3 veces (red lenta o primer arranque del servidor)
     if((!data || !data.ok) && intento < 3){ setTimeout(function(){ loadSlots(intento+1); }, 1200); return; }
-    // Si aun así no hubo respuesta, mostramos el horario igual (nunca dejar trabada la reserva)
-    slotsData = (data && data.ok) ? data : horarioSinConexion();
-    renderSlots(); check();
+    // Si aun así no hubo respuesta: usamos la copia guardada en el propio dominio
+    // (horas reales de la agenda, de hace unos minutos). Si tampoco existe, mostramos
+    // el horario igual: NUNCA se deja trabada la reserva.
+    if(!data || !data.ok){
+      disponibilidadEstatica(fecha, function(est){
+        slotsData = est || horarioSinConexion();
+        renderSlots(); check();
+      });
+      return;
+    }
+    slotsData = data; renderSlots(); check();
   });
 }
 /** Recalcula las horas cuando cambia el plan o la ruta (cambia la duración / el guía) */
@@ -707,8 +748,11 @@ $('#send').onclick=()=>{
 
   // Sin disponibilidad en vivo desde este navegador: la solicitud se envía por WhatsApp
   // (el backend no se puede alcanzar, así que no intentamos agendar a ciegas).
-  if(slotsData && slotsData.sinConexion){
-    openWhatsApp(msg+'\n\n_⚠️ No pude verificar la disponibilidad en vivo desde este navegador: ¿me confirman si esa hora está libre?_');
+  if(slotsData && (slotsData.sinConexion || slotsData.estatica)){
+    const nota = slotsData.estatica
+      ? '_📋 Usé la disponibilidad guardada de la agenda. ¿Me confirman si esa hora sigue libre?_'
+      : '_⚠️ No pude verificar la disponibilidad en vivo desde este navegador: ¿me confirman si esa hora está libre?_';
+    openWhatsApp(msg+'\n\n'+nota);
     toast('¡Listo! Envía el mensaje y te confirmamos la hora 💬');
     return;
   }
