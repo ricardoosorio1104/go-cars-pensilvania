@@ -540,27 +540,56 @@ function jsonp(params, cb, timeoutMs){
 /* Petición al backend: 1º por el MISMO sitio (puente de Netlify → nunca lo bloquea el
    navegador), y si eso falla, 2º directo a Google por JSONP. */
 let ultimaVia='';
+/* ================== CADENA DE TRANSPORTES ==================
+   Se prueba del más robusto al más frágil, porque algunos navegadores/extensores/
+   redes bloquean unos y permiten otros:
+     1) fetch directo   (el Apps Script SÍ responde con CORS) -> rápido y sin inyectar scripts
+     2) JSONP           (respaldo clásico: inyecta un <script>)
+     3) puente /api/exec (solo cuando el sitio está publicado en Netlify)
+   Si los tres fallan, quien llama decide (horario de respaldo / WhatsApp). */
+let diagVia = [];
 function pedir(params, cb){
   const qs=Object.keys(params).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(params[k])).join('&');
   let listo=false;
+  diagVia = [];
   function fin(d, via){ if(listo)return; listo=true; ultimaVia=via; cb(d, via); }
-  /* 9 s por intento: si el navegador bloquea el script de Google, hay que saberlo YA
-     y no dejar al usuario esperando medio minuto. */
-  function porJsonp(){ jsonp(params, function(d){ fin(d, d?'jsonp':'sin-respuesta'); }, 9000); }
-  /* El puente /api/exec sólo existe si el sitio está publicado en Netlify.
-     En GitHub Pages (o cualquier otro hosting) se va directo al Apps Script. */
+  function anota(t){ try{ diagVia.push(t); }catch(e){} }
+  function porJsonp(){
+    anota('script');
+    jsonp(params, function(d){
+      if(!d) anota('script-sin-respuesta');
+      fin(d, d?'jsonp':'sin-respuesta');
+    }, 8000);
+  }
+  function porFetch(){
+    anota('fetch');
+    try{
+      const ctrl = (typeof AbortController!=='undefined') ? new AbortController() : null;
+      const t = setTimeout(function(){ if(ctrl) ctrl.abort(); }, 8000);
+      fetch(API_URL + '?' + qs, ctrl ? {cache:'no-store', signal:ctrl.signal} : {cache:'no-store'})
+        .then(function(r){ return r.ok ? r.text() : null; })
+        .then(function(txt){
+          clearTimeout(t);
+          let d=null; try{ d = txt ? JSON.parse(txt) : null; }catch(e){ d=null; }
+          if(d){ anota('fetch-ok'); fin(d,'fetch'); } else { anota('fetch-sin-datos'); porJsonp(); }
+        })
+        .catch(function(){ clearTimeout(t); anota('fetch-fallo'); porJsonp(); });
+    }catch(e){ porJsonp(); }
+  }
+  /* El puente /api/exec sólo existe si el sitio está publicado en Netlify. */
   const puenteDisponible = location.hostname.indexOf('netlify') !== -1;
-  try{
-    if(!puenteDisponible){ porJsonp(); return; }
+  if(puenteDisponible){
+    anota('puente');
     fetch('/api/exec?'+qs, {cache:'no-store'})
       .then(function(r){ return r.ok ? r.text() : null; })
       .then(function(txt){
-        if(!txt){ porJsonp(); return; }
-        let d=null; try{ d=JSON.parse(txt); }catch(e){ d=null; }
-        if(d) fin(d,'puente'); else porJsonp();
+        let d=null; try{ d = txt ? JSON.parse(txt) : null; }catch(e){ d=null; }
+        if(d) fin(d,'puente'); else porFetch();
       })
-      .catch(function(){ porJsonp(); });
-  }catch(e){ porJsonp(); }
+      .catch(function(){ porFetch(); });
+  } else {
+    porFetch();
+  }
 }
 
 function fmt12(h){
@@ -589,7 +618,7 @@ function renderSlots(){
     wrap.innerHTML='<div class="slot-loading">No pudimos cargar las horas automáticamente.<br>'+
       '<button class="retry-btn" id="retrySlots">🔄 Reintentar</button>'+
       '<div style="margin-top:9px;font-size:12px">O <b>escríbenos por WhatsApp</b> y te confirmamos la hora disponible. 📲</div>'+
-      '<div style="margin-top:7px;font-size:10px;opacity:.55">diagnóstico: '+(ultimaVia||'iniciando')+'</div></div>';
+      '<div style="margin-top:7px;font-size:10px;opacity:.55">diagnóstico: '+(diagVia.length?diagVia.join(' · '):'iniciando')+'</div></div>';
     const rb=document.getElementById('retrySlots');
     if(rb) rb.onclick=function(){ loadSlots(0); };
     return;
