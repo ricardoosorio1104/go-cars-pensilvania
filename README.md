@@ -155,3 +155,26 @@ Claves de plan en el catálogo: `G1` Básico · `G2` Refrigerio · `G3` Mazamorr
 
 En teléfono (`max-width:640px`) la rejilla de planes va a **una casilla por fila** para que se lea
 y se toque bien.
+
+
+---
+
+## 🛡️ Si el catálogo dice «No pudimos cargar las horas» (sep-2026)
+
+**Causa:** el catálogo pide la disponibilidad a Apps Script con un `<script>` (JSONP) a
+`script.google.com`. Si el navegador bloquea ese script —bloqueadores de anuncios, modos de
+ahorro de datos, el navegador interno de otra app (WhatsApp/Instagram) o filtros de DNS— la
+consulta falla y antes quedaba un botón «Reintentar» sin salida.
+
+**Solución aplicada (nunca se queda trabada):**
+
+1. Fallo detectado en **9 s** por intento (antes 30 s), hasta **4 intentos** con aviso del
+   número de intento en pantalla.
+2. Si no hay respuesta, se muestra el **horario completo** con la etiqueta *Por confirmar*,
+   seleccionable, con un aviso claro y botón «Volver a intentar».
+3. Al enviar en ese estado, la reserva **no** se agenda a ciegas: va por WhatsApp con la nota
+   *«no pude verificar la disponibilidad en vivo: ¿me confirman si esa hora está libre?»*.
+
+**Arreglo definitivo (pendiente):** publicar un proxy propio en el dominio (Cloudflare Worker en
+un subdominio tipo `api.gocarspensilvania.com` que devuelva JSONP). Al ser el propio dominio, no
+lo bloquea ningún filtro. Requiere acceso a la API de Cloudflare.

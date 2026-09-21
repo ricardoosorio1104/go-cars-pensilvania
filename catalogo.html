@@ -163,6 +163,11 @@
   .slot.on{background:var(--orange);border-color:var(--orange);color:#fff}
   .slot.lleno{background:rgba(30,35,39,.06);border-color:transparent;color:rgba(30,35,39,.35);
     cursor:not-allowed;text-decoration:line-through}
+  /* Horas mostradas cuando el navegador no deja consultar la disponibilidad en vivo */
+  .slot.porconf{border-style:dashed;border-color:rgba(245,96,11,.55);background:rgba(245,96,11,.06)}
+  .slot.porconf .cap{color:#B5500E}
+  .slot-notice{background:rgba(245,96,11,.08);border:1.5px dashed rgba(245,96,11,.5);border-radius:12px;
+    padding:12px 14px;margin:0 0 12px;font-size:12.5px;line-height:1.55;color:var(--charcoal)}
   .slot .cap{display:block;font-family:'Poppins',sans-serif;font-size:9px;font-weight:500;opacity:.75;margin-top:2px}
   .aviso{background:rgba(179,38,30,.08);border:1.5px solid rgba(179,38,30,.35);color:#8f1d17;
     border-radius:12px;padding:11px 13px;font-size:12.5px;line-height:1.45;margin-top:12px;display:none}
@@ -539,7 +544,9 @@ function pedir(params, cb){
   const qs=Object.keys(params).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(params[k])).join('&');
   let listo=false;
   function fin(d, via){ if(listo)return; listo=true; ultimaVia=via; cb(d, via); }
-  function porJsonp(){ jsonp(params, function(d){ fin(d, d?'jsonp':'sin-respuesta'); }, 30000); }
+  /* 9 s por intento: si el navegador bloquea el script de Google, hay que saberlo YA
+     y no dejar al usuario esperando medio minuto. */
+  function porJsonp(){ jsonp(params, function(d){ fin(d, d?'jsonp':'sin-respuesta'); }, 9000); }
   /* El puente /api/exec sólo existe si el sitio está publicado en Netlify.
      En GitHub Pages (o cualquier otro hosting) se va directo al Apps Script. */
   const puenteDisponible = location.hostname.indexOf('netlify') !== -1;
@@ -562,6 +569,15 @@ function fmt12(h){
   return h12+':'+M+' '+ap;
 }
 function ocultarMensajes(){ $('#aviso').classList.remove('show'); $('#okMsg').classList.remove('show'); }
+
+/* Horario de respaldo: cuando el navegador no deja consultar la disponibilidad en vivo
+   (bloqueadores de scripts, navegador dentro de otra app, datos móviles inestables),
+   NO dejamos la reserva trabada. Mostramos el horario completo y el cupo se confirma
+   por WhatsApp al instante. */
+function horarioSinConexion(){
+  return {ok:true, sinConexion:true, capacidad:CAPACIDAD,
+          slots:SLOTS.map(function(h){ return {hora:h, estado:'porconfirmar', libres:CAPACIDAD, ruta:''}; })};
+}
 
 function renderSlots(){
   const wrap=$('#slotsWrap');
@@ -586,19 +602,26 @@ function renderSlots(){
     if(!arr.length) return '';
     return '<div class="slot-group"><div class="g-label">'+titulo+'</div><div class="slots">'+
       arr.map(function(s){
-        const cls='slot'+(hora===s.hora?' on':'')+(ocupado(s)?' lleno':'');
+        const cls='slot'+(hora===s.hora?' on':'')+(ocupado(s)?' lleno':'')+(s.estado==='porconfirmar'?' porconf':'');
         var c;
         if(ocupado(s)) c='Ocupado';
+        else if(s.estado==='porconfirmar') c='Por confirmar';
         else if(s.estado==='unirse') c=(s.libres||0)+' libre'+((s.libres||0)>1?'s':'')+' · unirse';
         else if(!s.estado && (s.libres||0) < cap) c=(s.libres||0)+' libre'+((s.libres||0)>1?'s':'');
         else c='Disponible';
         return '<div class="'+cls+'" data-h="'+s.hora+'">'+fmt12(s.hora)+'<span class="cap">'+c+'</span></div>';
       }).join('')+'</div></div>';
   }
-  wrap.innerHTML=grupo('Mañana',man)+grupo('Tarde',tar);
+  const avisoSin = slotsData.sinConexion ?
+    '<div class="slot-notice">📵 <b>No pudimos ver la disponibilidad en vivo desde este navegador.</b><br>'+
+    'Puedes reservar igual: elige tu hora y <b>te la confirmamos al instante por WhatsApp</b>.'+
+    '<button class="retry-btn" id="retrySlots" style="display:block;width:100%">🔄 Volver a intentar</button></div>' : '';
+  wrap.innerHTML=avisoSin+grupo('Mañana',man)+grupo('Tarde',tar);
   wrap.querySelectorAll('.slot:not(.lleno)').forEach(function(el){
     el.onclick=function(){ hora=el.dataset.h; ocultarMensajes(); renderSlots(); check(); };
   });
+  const rs=document.getElementById('retrySlots');
+  if(rs) rs.onclick=function(){ slotsData=null; loadSlots(0); };
 }
 
 function loadSlots(intento){
@@ -611,11 +634,14 @@ function loadSlots(intento){
   const dur  = plan ? PLANS[plan].m : 45;
   const ruta = route ? ROUTES[route].n : '';
   $('#slotsWrap').innerHTML='<div class="slot-loading">Cargando horas disponibles… ⏳'+
-    (intento>0?'<br><span style="font-size:11px">reintentando…</span>':'')+'</div>';
+    (intento>0?'<br><span style="font-size:11px">reintentando… (intento '+(intento+1)+' de 4)</span>':'')+'</div>';
   pedir({action:'slots',fecha:fecha,dur:dur,ruta:ruta}, function(data){
     // si falla, reintenta solo (hasta 2 veces)
-    if((!data || !data.ok) && intento < 2){ setTimeout(function(){ loadSlots(intento+1); }, 1500); return; }
-    slotsData=data; renderSlots(); check();
+    // Reintenta hasta 3 veces (red lenta o primer arranque del servidor)
+    if((!data || !data.ok) && intento < 3){ setTimeout(function(){ loadSlots(intento+1); }, 1200); return; }
+    // Si aun así no hubo respuesta, mostramos el horario igual (nunca dejar trabada la reserva)
+    slotsData = (data && data.ok) ? data : horarioSinConexion();
+    renderSlots(); check();
   });
 }
 /** Recalcula las horas cuando cambia el plan o la ruta (cambia la duración / el guía) */
@@ -649,6 +675,14 @@ $('#send').onclick=()=>{
 `👤 *${nombre||'—'}* · ${tel||'—'}`;
 
   ocultarMensajes();
+
+  // Sin disponibilidad en vivo desde este navegador: la solicitud se envía por WhatsApp
+  // (el backend no se puede alcanzar, así que no intentamos agendar a ciegas).
+  if(slotsData && slotsData.sinConexion){
+    openWhatsApp(msg+'\n\n_⚠️ No pude verificar la disponibilidad en vivo desde este navegador: ¿me confirman si esa hora está libre?_');
+    toast('¡Listo! Envía el mensaje y te confirmamos la hora 💬');
+    return;
+  }
 
   // Sin backend configurado: solo WhatsApp
   if(!API_URL){
