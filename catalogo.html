@@ -456,6 +456,43 @@ function renderRoutes(){
 
 // ── Ficha de detalle de la ruta ──
 let currentRoute=null;
+
+/* ================== CAPAS INTERNAS Y EL BOTÓN ATRÁS ==================
+   La ficha de ruta y el modal de asesoría son capas DENTRO del catálogo: si el
+   visitante pulsa "atrás" en el navegador, debe cerrarse la capa y NO abandonar el
+   catálogo (antes lo sacaba de la página a mitad de la reserva).
+
+   Cómo funciona: cada capa abierta apila una entrada en el historial. Si la capa se
+   cierra desde la propia interfaz (✕, "Volver y elegir otra", Escape) se descuenta
+   esa entrada con history.back(), para que el historial no se ensucie. */
+const CAPAS = [
+  {id:'advOverlay', cls:'show'},   // modal de asesoría (encima de todo)
+  {id:'overlay',    cls:'show'}    // ficha de detalle de la ruta
+];
+const capaDef = id => CAPAS.find(c => c.id === id);
+const capaOn  = id => { const c = capaDef(id); return !!c && document.getElementById(c.id).classList.contains(c.cls); };
+const capaTop = () => CAPAS.filter(c => capaOn(c.id))[0] || null;
+function capaCerrarDOM(id){
+  const c = capaDef(id); if (!c) return;
+  document.getElementById(c.id).classList.remove(c.cls);
+  if (id === 'overlay') currentRoute = null;   // la ficha deja de estar abierta
+  document.body.style.overflow = '';           // devuelve el scroll
+}
+let capasGC = 0, popsPropios = 0;
+function capaPush(){ capasGC++; history.pushState({gc:capasGC}, ''); }
+function capaCerrar(id){
+  const c = id ? capaDef(id) : capaTop();
+  if (!c || !capaOn(c.id)) return false;
+  capaCerrarDOM(c.id);
+  if (capasGC > 0){ capasGC--; popsPropios++; history.back(); }
+  return true;
+}
+window.addEventListener('popstate', ()=>{
+  if (popsPropios > 0){ popsPropios--; return; }   // este "atrás" lo pedimos nosotros al cerrar
+  const c = capaTop();
+  if (c && capasGC > 0){ capasGC--; capaCerrarDOM(c.id); }
+});
+
 function openRoute(k){
   currentRoute=k; const v=ROUTES[k];
   $('#detKicker').textContent='Ruta';
@@ -472,14 +509,12 @@ function openRoute(k){
   const opts=v.incl.slice(1).map(x=>x.replace(/^Opcional si lo quieres agregar al plan:\s*/i,'').replace(/^si lo agrega al plan:\s*/i,''));
   if(opts.length){ $('#detOpt').innerHTML=opts.map(i=>`<li>${i}</li>`).join(''); $('#optBlock').style.display=''; }
   else { $('#detOpt').innerHTML=''; $('#optBlock').style.display='none'; }
+  const yaFicha = capaOn('overlay');    // hay que preguntarlo ANTES de abrir la capa
   document.body.style.overflow='hidden';
   $('#overlay').classList.add('show');
+  if (!yaFicha) capaPush();             // el "atrás" cierra la ficha y devuelve al catálogo
 }
-function closeRoute(){
-  document.body.style.overflow='';
-  $('#overlay').classList.remove('show');
-  currentRoute=null;
-}
+function closeRoute(){ capaCerrar('overlay'); }
 $('#sheetClose').onclick=()=>closeRoute();
 $('#detBack').onclick=()=>closeRoute();
 $('#detChoose').onclick=()=>{
@@ -501,12 +536,14 @@ function irAWhatsApp(texto, waWin){
 function openWhatsApp(msg){ irAWhatsApp(msg, null) || (window.location.href=waUrl(msg)); }
 $('#helpBtn').onclick=()=>{
   $('#advNombre').value=''; $('#advTel').value='';
+  const yaAdv = capaOn('advOverlay');
   document.body.style.overflow='hidden';
   $('#advOverlay').classList.add('show');
+  if (!yaAdv) capaPush();               // el "atrás" cierra el modal, no el catálogo
   setTimeout(()=>$('#advNombre').focus(),80);
 };
-$('#advCancel').onclick=()=>{ document.body.style.overflow=''; $('#advOverlay').classList.remove('show'); };
-$('#advClose').onclick=()=>{ document.body.style.overflow=''; $('#advOverlay').classList.remove('show'); };
+$('#advCancel').onclick=()=>capaCerrar('advOverlay');
+$('#advClose').onclick=()=>capaCerrar('advOverlay');
 $('#advSend').onclick=()=>{
   const nombre=$('#advNombre').value.trim()||'—', tel=$('#advTel').value.trim()||'—';
   const msg=
@@ -514,8 +551,7 @@ $('#advSend').onclick=()=>{
 `👤 *Nombre:* ${nombre}\n`+
 `📞 *WhatsApp:* ${tel}\n\n`+
 `Me gustaría *una asesoría* para elegir mi plan y ruta ideal. 🏔️`;
-  document.body.style.overflow='';
-  $('#advOverlay').classList.remove('show');
+  capaCerrar('advOverlay');
   openWhatsApp(msg);
 };
 function check(){ $('#send').disabled=!(plan&&route&&hora); }

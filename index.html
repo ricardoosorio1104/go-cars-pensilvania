@@ -895,6 +895,45 @@ document.querySelectorAll('[data-wa]').forEach(a=>{
 });
 $('#year').textContent = new Date().getFullYear();
 
+/* ================== CAPAS INTERNAS Y EL BOTÓN ATRÁS ==================
+   La ficha de ruta, el visor de mapa, la galería y el menú de WhatsApp son capas
+   DENTRO del sitio: si el visitante pulsa "atrás" en el navegador, debe cerrarse la
+   capa y NO abandonar la página (antes lo sacaba del sitio y perdía el avance).
+
+   Cómo funciona: cada capa abierta apila una entrada en el historial. Si la capa se
+   cierra desde la propia interfaz (✕, tocar fuera o Escape) se descuenta esa entrada
+   con history.back(), para que el historial no se ensucie y el siguiente "atrás" sí
+   salga del sitio, como espera el visitante. El orden de la lista va de la capa más
+   superficial (encima de todo) a la más profunda. */
+const CAPAS = [
+  {id:'mapLb', cls:'on'},   // visor de mapa a pantalla completa (va encima de la ficha)
+  {id:'lb',    cls:'on'},   // galería / lightbox
+  {id:'waPop', cls:'on'},   // menú flotante de WhatsApp
+  {id:'det',   cls:'on'}    // ficha de detalle de la ruta
+];
+const capaDef = id => CAPAS.find(c => c.id === id);
+const capaOn  = id => { const c = capaDef(id); return !!c && document.getElementById(c.id).classList.contains(c.cls); };
+const capaTop = () => CAPAS.filter(c => capaOn(c.id))[0] || null;
+function capaCerrarDOM(id){
+  const c = capaDef(id); if (!c) return;
+  document.getElementById(c.id).classList.remove(c.cls);
+  if (id === 'det') document.body.style.overflow = '';   // devuelve el scroll de la página
+}
+let capasGC = 0, popsPropios = 0;
+function capaPush(){ capasGC++; history.pushState({gc:capasGC}, ''); }
+function capaCerrar(id){
+  const c = id ? capaDef(id) : capaTop();
+  if (!c || !capaOn(c.id)) return false;
+  capaCerrarDOM(c.id);
+  if (capasGC > 0){ capasGC--; popsPropios++; history.back(); }
+  return true;
+}
+window.addEventListener('popstate', ()=>{
+  if (popsPropios > 0){ popsPropios--; return; }   // este "atrás" lo pedimos nosotros al cerrar
+  const c = capaTop();
+  if (c && capasGC > 0){ capasGC--; capaCerrarDOM(c.id); }
+});
+
 /* ================== MODAL DE RUTA ================== */
 const det = $('#det');
 function openRoute(i){
@@ -908,10 +947,12 @@ function openRoute(i){
   $('#detOpt').innerHTML = r.o.map(x=>`<li>${x}</li>`).join('');
   const txt = encodeURIComponent(`Hola GO CARS Pensilvania 🏁 quiero reservar la ruta *${r.n}* (${r.d}). ¿Me confirman disponibilidad?`);
   $('#detCta').href = 'https://wa.me/' + WA1 + '?text=' + txt;
+  const yaFicha = capaOn('det');             // hay que preguntarlo ANTES de abrir la capa
   det.classList.add('on'); document.body.style.overflow='hidden';
+  if (!yaFicha) capaPush();                  // el "atrás" cierra la ficha, no la pagina
   det.querySelector('.det-sheet').scrollTop = 0;
 }
-function closeRoute(){ det.classList.remove('on'); document.body.style.overflow=''; }
+function closeRoute(){ capaCerrar('det'); }
 /* Mapa de la ruta a pantalla completa */
 function openMap(){
   const src = $('#detImg').getAttribute('src');
@@ -920,38 +961,46 @@ function openMap(){
   $('#mapLbImg').alt = 'Mapa de la ruta ' + $('#detTitle').textContent;
   $('#mapLbTag').textContent = 'Ruta ' + $('#detTitle').textContent + ' · ' +
     [...$('#detChips').children].map(c=>c.textContent.trim()).join(' · ');
+  const yaMapa = capaOn('mapLb');
   $('#mapLb').classList.add('on');
+  if (!yaMapa) capaPush();                   // el "atrás" cierra el mapa y deja la ficha abierta
 }
 $('#detImgWrap').onclick = openMap;
 $('#detMap').onclick = openMap;
-$('#mapLbClose').onclick = ()=> $('#mapLb').classList.remove('on');
-$('#mapLb').addEventListener('click', e=>{ if(e.target.id === 'mapLb') $('#mapLb').classList.remove('on'); });
+$('#mapLbClose').onclick = ()=> capaCerrar('mapLb');
+$('#mapLb').addEventListener('click', e=>{ if(e.target.id === 'mapLb') capaCerrar('mapLb'); });
 $('#rutasGrid').addEventListener('click', e=>{
   const b = e.target.closest('[data-r]'); if(b) openRoute(+b.dataset.r);
 });
-$('#detClose').onclick = closeRoute;
-$('#detBack').onclick = closeRoute;
-det.addEventListener('click', e=>{ if(e.target===det) closeRoute(); });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeRoute(); $('#lb').classList.remove('on'); $('#mapLb').classList.remove('on'); } });
+$('#detClose').onclick = ()=> capaCerrar('det');
+$('#detBack').onclick = ()=> capaCerrar('det');
+det.addEventListener('click', e=>{ if(e.target===det) capaCerrar('det'); });
+/* Escape cierra SOLO la capa de mas arriba (antes las cerraba todas de golpe) */
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') capaCerrar(); });
 
 /* ================== LIGHTBOX ================== */
 let gi = 0;
 const lb = $('#lb');
 function showLb(i){
   gi = (i + GALLERY.length) % GALLERY.length;
+  const yaGal = capaOn('lb');
   $('#lbImg').src = GALLERY[gi].src; $('#lbImg').alt = GALLERY[gi].alt;
   lb.classList.add('on');
+  if (!yaGal) capaPush();                    // el "atrás" cierra la galeria
 }
 $('#galGrid').addEventListener('click', e=>{
   const b = e.target.closest('[data-g]'); if(b) showLb(+b.dataset.g);
 });
-$('#lbClose').onclick = ()=> lb.classList.remove('on');
+$('#lbClose').onclick = ()=> capaCerrar('lb');
 $('#lbPrev').onclick = ()=> showLb(gi-1);
 $('#lbNext').onclick = ()=> showLb(gi+1);
-lb.addEventListener('click', e=>{ if(e.target===lb) lb.classList.remove('on'); });
+lb.addEventListener('click', e=>{ if(e.target===lb) capaCerrar('lb'); });
 
 /* ================== WHATSAPP FLOTANTE ================== */
-$('#waBtn').onclick = ()=> $('#waPop').classList.toggle('on');
+$('#waBtn').onclick = ()=>{
+  if (capaOn('waPop')) capaCerrar('waPop');
+  else { $('#waPop').classList.add('on'); capaPush(); }
+};
 
 /* ================== REVEAL ================== */
 const io = new IntersectionObserver((es)=>{
