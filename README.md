@@ -178,3 +178,37 @@ consulta falla y antes quedaba un botón «Reintentar» sin salida.
 **Arreglo definitivo (pendiente):** publicar un proxy propio en el dominio (Cloudflare Worker en
 un subdominio tipo `api.gocarspensilvania.com` que devuelva JSONP). Al ser el propio dominio, no
 lo bloquea ningún filtro. Requiere acceso a la API de Cloudflare.
+
+## ↩️ El botón «atrás» del navegador cierra las capas internas (sep-2026)
+
+Antes, si el visitante abría la ficha de una ruta, el visor del mapa o la galería y pulsaba **atrás**,
+salía del sitio y perdía todo el avance. Ahora esas capas viven dentro del historial: **atrás cierra la
+capa y lo deja donde estaba**.
+
+**Cómo funciona** (bloque «CAPAS INTERNAS Y EL BOTÓN ATRÁS» en `index.html` y `catalogo.html`):
+
+1. Cada capa abierta empila una entrada con `history.pushState()`. La lista `CAPAS` va de la capa más
+   superficial a la más profunda:
+   - `index.html`:  `#mapLb` (mapa) → `#lb` (galería) → `#waPop` (WhatsApp) → `#det` (ficha de ruta)
+   - `catalogo.html`: `#advOverlay` (asesoría) → `#overlay` (ficha de ruta)
+2. `popstate` cierra **solo la capa de más arriba** (el contador `capasGC` baja uno). Si no hay capas,
+   no se intercepta nada y el navegador sale del sitio como siempre.
+3. Cerrar desde la interfaz (✕, tocar fuera, **Escape**, «Volver y elegir otra», «Elegir esta ruta»)
+   descuenta la entrada con `history.back()` — así el historial no se ensucia y el siguiente «atrás» sí
+   sale del sitio.
+
+**⚠️ Trampa al tocar este código:** la pregunta «¿ya estaba abierta la capa?» hay que hacerla **antes**
+de añadir la clase que la abre. Si se evalúa después (`if (!capaOn('det')) capaPush()`), siempre da falso,
+nunca se empila la entrada y **el botón atrás vuelve a sacar al visitante del sitio**. Por eso se guarda
+primero en una variable: `const yaFicha = capaOn('det'); …; if (!yaFicha) capaPush();`
+
+**Cómo verificarlo** (no basta con mirar la pantalla):
+
+```js
+capasGC         // contador de capas: 0 al inicio, +1 por capa abierta, 0 al cerrar todas
+history.back()  // simula el botón atrás REAL del navegador
+```
+
+Secuencia correcta: abrir la ficha (capasGC=1) → atrás → la ficha se cierra y la URL **sigue** siendo la
+del sitio (capasGC=0). Con dos niveles: ficha+mapa (capasGC=2) → atrás cierra **solo** el mapa
+(capasGC=1) → atrás cierra la ficha. Y tras cerrar con la ✕, capasGC debe volver exacto a 0.
