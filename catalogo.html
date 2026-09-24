@@ -58,6 +58,8 @@
   .opt .dur span{font-size:10.5px;font-weight:500;opacity:.82;line-height:1}
   .opt.on .dur{background:var(--orange);box-shadow:0 3px 10px rgba(245,96,11,.3)}
   .opt .p{font-family:'Oswald',sans-serif;font-weight:700;font-size:16px;color:var(--orange);margin-top:10px;align-self:flex-start}
+/* Segunda linea del precio (ej. Plan Fiesta: "por los 4 cars · medio dia") para que quepa en celular */
+.opt .p small{display:block;font-family:'Poppins',sans-serif;font-weight:400;font-size:10.5px;line-height:1.3;margin-top:3px;opacity:.78;letter-spacing:.1px}
   .hint-route{font-family:'Oswald',sans-serif;font-size:11px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:var(--coffee);margin-top:10px;align-self:flex-start;opacity:.85}
   /* Mapa del recorrido: miniatura en la tarjeta (vertical para no cortar la ruta) */
   .opt .rmap{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:center top;
@@ -249,7 +251,7 @@
     <h3 class="sec-title"><span class="n">3</span> ¿Cuántos cars?</h3>
     <div class="stepper">
       <button id="dec" aria-label="menos">−</button>
-      <div><div class="val" id="cars">1</div><div class="hint">cars</div></div>
+      <div><div class="val" id="cars">1</div><div class="hint" id="carsHint">cars</div></div>
       <button id="inc" aria-label="más">+</button>
     </div>
     <div class="hint" style="margin-top:8px">Cada car es <b>monoplaza: 1 persona por car</b>. Tenemos 4 disponibles.</div>
@@ -376,7 +378,8 @@ const PLANS = {
   G2:{n:'Plan Refrigerio',      dur:'60 min',    d:'refrigerio en el camino', p:110000, m:60},
   G3:{n:'Plan Mazamorrada',     dur:'80 min',    d:'parada con mazamorra regional', p:140000, m:80},
   G4:{n:'Plan con paradas',     dur:'2 h',       d:'degustación de productos locales y parada en miradores naturales', p:180000, m:120},
-  G5:{n:'Plan Fiesta / Grupal', dur:'Medio día', d:'experiencia completa', p:700000, m:240}
+  // El Plan Fiesta (grupal) NO es precio por car: vale por el alquiler de los 4 cars medio día.
+  G5:{n:'Plan Fiesta / Grupal', dur:'Medio día', d:'experiencia completa', p:700000, m:240, grupal:true, u:'los 4 cars · medio día'}
 };
 const ROUTES = {
   r1:{n:'Pie del Cerro Morrón', d:'9.3 km · pavimento y trocha',
@@ -436,10 +439,22 @@ function renderPlans(){
     const el=document.createElement('div');
     el.className='opt'+(plan===k?' on':''); el.dataset.k=k;
     el.innerHTML=`<div class="dur"><b>${v.dur}</b><span>de recorrido</span></div>`+
-                 `<div class="t">${v.n}</div><div class="d">${v.d}</div><div class="p">${fmt(v.p)} / car</div>`;
-    el.onclick=()=>{plan=k;renderPlans();check();refrescarDisponibilidad();};
+                 `<div class="t">${v.n}</div><div class="d">${v.d}</div><div class="p">${fmt(v.p)}${v.u?`<small>por ${v.u}</small>`:' / car'}</div>`;
+    el.onclick=()=>{plan=k;aplicarPlanGrupal();renderPlans();check();refrescarDisponibilidad();};
     $('#plans').appendChild(el);
   }
+}
+/* El Plan Fiesta se cobra por el alquiler COMPLETO de los 4 cars (medio día), no por car.
+   Al elegirlo se fijan los 4 cars y se bloquea el contador para que el total nunca se
+   multiplique por el número de cars. */
+function planEsGrupal(){ return !!(plan && PLANS[plan].grupal); }
+function aplicarPlanGrupal(){
+  const g=planEsGrupal();
+  if(g) cars=CAPACIDAD; else if(cars>CAPACIDAD) cars=CAPACIDAD;
+  $('#cars').textContent=cars;
+  $('#inc').disabled=g; $('#dec').disabled=g;
+  const h=document.getElementById('carsHint');
+  if(h) h.textContent=g?'incluidos':'cars';
 }
 function renderRoutes(){
   $('#routes').innerHTML='';
@@ -757,8 +772,8 @@ function refrescarDisponibilidad(){
 $('#fecha').addEventListener('change', function(){ loadSlots(0); });
 
 // Stepper
-$('#inc').onclick=()=>{if(cars<4){cars++;$('#cars').textContent=cars;}};
-$('#dec').onclick=()=>{if(cars>1){cars--;$('#cars').textContent=cars;}};
+$('#inc').onclick=()=>{if(planEsGrupal())return;if(cars<CAPACIDAD){cars++;$('#cars').textContent=cars;}};
+$('#dec').onclick=()=>{if(planEsGrupal())return;if(cars>1){cars--;$('#cars').textContent=cars;}};
 
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
 
@@ -768,16 +783,17 @@ $('#send').onclick=()=>{
   const p=PLANS[plan];
   const fecha=$('#fecha').value;
   const nombre=$('#nombre').value.trim(), tel=$('#telefono').value.trim();
-  const total=p.p*cars;
+  // El Plan Fiesta (grupal) vale por el alquiler de los 4 cars: NO se multiplica por cars.
+  const total = p.grupal ? p.p : p.p*cars;
 
   const msg=
 `🏁 *Reserva — GO CARS Pensilvania*\n\n`+
 `*Plan:* ${p.n} · ${p.dur} de recorrido (${p.d})\n`+
 `*Ruta:* ${ROUTES[route].n}\n`+
-`*Cars (1 persona por car):* ${cars}\n`+
+(p.grupal?`*Cars:* los ${cars} (incluidos en el plan)\n`:`*Cars (1 persona por car):* ${cars}\n`)+
 `*Fecha:* ${fecha}\n`+
 `*Hora:* ${fmt12(hora)}\n`+
-`*Total:* ${fmt(total)}${cars>1?` (${fmt(p.p)} × ${cars})`:''}\n\n`+
+`*Total:* ${fmt(total)}${(cars>1&&!p.grupal)?` (${fmt(p.p)} × ${cars})`:''}\n\n`+
 `👤 *${nombre||'—'}* · ${tel||'—'}`;
 
   ocultarMensajes();
@@ -858,6 +874,8 @@ $('#send').onclick=()=>{
   }catch(e){}
 })();
 
+// Si el plan llegó preseleccionado por la URL (?plan=G5), fijamos los 4 cars del plan grupal
+aplicarPlanGrupal();
 renderPlans();renderRoutes();check();
 
 /* Confirmación breve cuando el plan llegó preseleccionado desde el sitio */

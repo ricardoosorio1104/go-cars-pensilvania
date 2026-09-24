@@ -565,7 +565,8 @@ footer ul{list-style:none;display:grid;gap:9px}
       <div class="kicker">Planes y precios</div>
       <h2 class="h2">Elige cómo vivir la ruta</h2>
       <p class="lead">Desde 45 minutos de aventura hasta medio día completo con degustación de productos locales.
-        Precio por car · <b>1 persona</b> (nuestros cars son monoplaza).<br>
+        Precio por car · <b>1 persona</b> (nuestros cars son monoplaza).
+        El <b>Plan Fiesta</b> es grupal: <b>$700.000 por el alquiler de los 4 cars</b> durante medio día.<br>
         <b>Toca el plan que te guste</b> y te llevamos al catálogo para apartarlo.</p>
     </div>
     <div class="planes-grid" id="planesGrid"></div>
@@ -791,7 +792,7 @@ const PLANS = [
   {k:'G2', n:'Plan Refrigerio',      t:'60 min',    d:'refrigerio en el camino', p:110000},
   {k:'G3', n:'Plan Mazamorrada',     t:'80 min',    d:'parada con mazamorra regional', p:140000},
   {k:'G4', n:'Plan con paradas',     t:'2 horas',   d:'degustación de productos locales y parada en miradores naturales', p:180000, hot:true},
-  {k:'G5', n:'Plan Fiesta / Grupal', t:'Medio día', d:'experiencia completa', p:700000}
+  {k:'G5', n:'Plan Fiesta / Grupal', t:'Medio día', d:'experiencia completa', p:700000, grupal:true}
 ];
 
 const ROUTES = [
@@ -869,7 +870,7 @@ $('#planesGrid').innerHTML = PLANS.map(p=>`
     <div class="p-name">${p.n}</div>
     <div class="p-dur">${p.t}</div>
     <div class="p-desc">${p.d}</div>
-    <div class="p-price">${fmt(p.p)}<small>por car · 1 persona</small></div>
+    <div class="p-price">${fmt(p.p)}<small>${p.grupal?'por los 4 cars · medio día':'por car · 1 persona'}</small></div>
     <span class="p-go">Reservar este plan <i aria-hidden="true">→</i></span>
   </a>`).join('');
 
