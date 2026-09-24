@@ -3,3 +3,9 @@ _*.sh
 _*.py
 *.sh
 __pycache__/
+
+# Netlify (retirado sep-2026: el sitio se publica solo por GitHub Pages)
+.netlify/
+_redirects
+_headers
+netlify.toml

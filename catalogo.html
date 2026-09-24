@@ -9,7 +9,7 @@
 <meta property="og:site_name" content="GO CARS Pensilvania">
 <meta property="og:title" content="GO CARS Pensilvania — Siente la montaña, vive la ruta">
 <meta property="og:description" content="Cars 212cc 4T por las rutas turísticas de Pensilvania, Caldas. Planes con refrigerio, mazamorra y paradas en miradores. Reserva en línea.">
-<meta property="og:image" content="https://gocarspensilvania.netlify.app/assets/img/banner-marca.jpg">
+<meta property="og:image" content="https://gocarspensilvania.com/assets/img/banner-marca.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -212,10 +212,6 @@
   .btn-cancel{width:100%;background:transparent;color:var(--charcoal);border:1.5px solid var(--line);border-radius:14px;padding:11px;margin-top:9px;
     font-family:'Oswald',sans-serif;font-weight:500;text-transform:uppercase;letter-spacing:1px;font-size:13px;cursor:pointer}
   .btn-cancel:hover{border-color:var(--coffee);color:var(--coffee)}
-
-/* ---- Oculta la insignia "Powered by Netlify": la inyecta su script, no es parte del diseño ---- */
-#nl-badge-frame, iframe[title="Powered by Netlify"], iframe[src*="netlify-badge"]{
-  display:none !important; visibility:hidden !important; pointer-events:none !important; opacity:0 !important}
 </style>
 </head>
 <body>
@@ -588,16 +584,15 @@ function jsonp(params, cb, timeoutMs){
   document.body.appendChild(s);
 }
 
-/* Petición al backend: 1º por el MISMO sitio (puente de Netlify → nunca lo bloquea el
-   navegador), y si eso falla, 2º directo a Google por JSONP. */
+/* Petición al backend: 1º fetch directo a Google (el Apps Script SÍ responde con CORS) y,
+   si eso falla, 2º JSONP (respaldo clásico: inyecta un <script>). */
 let ultimaVia='';
 /* ================== CADENA DE TRANSPORTES ==================
    Se prueba del más robusto al más frágil, porque algunos navegadores/extensores/
    redes bloquean unos y permiten otros:
-     1) fetch directo   (el Apps Script SÍ responde con CORS) -> rápido y sin inyectar scripts
-     2) JSONP           (respaldo clásico: inyecta un <script>)
-     3) puente /api/exec (solo cuando el sitio está publicado en Netlify)
-   Si los tres fallan, quien llama decide (horario de respaldo / WhatsApp). */
+     1) fetch directo   -> rápido y sin inyectar scripts
+     2) JSONP           -> respaldo clásico (inyecta un <script>)
+   Si los dos fallan, quien llama decide (horario de respaldo / WhatsApp). */
 let diagVia = [];
 function pedir(params, cb){
   const qs=Object.keys(params).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(params[k])).join('&');
@@ -627,20 +622,7 @@ function pedir(params, cb){
         .catch(function(){ clearTimeout(t); anota('fetch-fallo'); porJsonp(); });
     }catch(e){ porJsonp(); }
   }
-  /* El puente /api/exec sólo existe si el sitio está publicado en Netlify. */
-  const puenteDisponible = location.hostname.indexOf('netlify') !== -1;
-  if(puenteDisponible){
-    anota('puente');
-    fetch('/api/exec?'+qs, {cache:'no-store'})
-      .then(function(r){ return r.ok ? r.text() : null; })
-      .then(function(txt){
-        let d=null; try{ d = txt ? JSON.parse(txt) : null; }catch(e){ d=null; }
-        if(d) fin(d,'puente'); else porFetch();
-      })
-      .catch(function(){ porFetch(); });
-  } else {
-    porFetch();
-  }
+  porFetch();
 }
 
 function fmt12(h){
@@ -888,23 +870,5 @@ const d=new Date();$('#fecha').value=d.toISOString().slice(0,10);
 loadSlots();
 </script>
 
-<script>
-/* Guarda: si Netlify vuelve a insertar su insignia, se oculta otra vez */
-(function(){
-  var SEL = '#nl-badge-frame, iframe[title="Powered by Netlify"], iframe[src*="netlify-badge"]';
-  function hide(){
-    document.querySelectorAll(SEL).forEach(function(el){
-      el.style.setProperty('display','none','important');
-      el.style.setProperty('visibility','hidden','important');
-      el.setAttribute('aria-hidden','true');
-    });
-  }
-  hide();
-  try {
-    new MutationObserver(hide).observe(document.documentElement, {childList:true, subtree:true});
-  } catch(e){}
-  [400, 1200, 3000, 8000, 15000].forEach(function(t){ setTimeout(hide, t); });
-})();
-</script>
 </body>
 </html>

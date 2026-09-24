@@ -1,3 +1,0 @@
-# Proxy interno: la página llama a /api/exec (mismo sitio) y Netlify lo reenvía al backend
-# de Google Apps Script. Así se evitan bloqueos de peticiones externas (CORS / bloqueadores).
-/api/exec  https://script.google.com/macros/s/AKfycbzJ7i6Rq-__fSYs51kKacG6XB20YEzaTbsUVZ5fWOkMxn35Th-sdsLYRqewOjLTSlWT7A/exec  200

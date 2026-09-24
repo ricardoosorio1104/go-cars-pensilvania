@@ -14,15 +14,20 @@ Aplica el manual de identidad de marca (versión 2026): colores `#F5600B` / `#14
 
   y visita **http://127.0.0.1:8099**
 
-  > ⚠️ Usa `servir.py`, **no** `python -m http.server`. Los videos del sitio **avanzan con el scroll** (no se reproducen solos), y eso exige que el servidor soporte peticiones **Range (206)**. El `http.server` normal no las soporta, y con él los videos grandes se quedan congelados al desplazarse. (En Netlify o cualquier hosting real el soporte de rangos ya viene incluido.)
+  > ⚠️ Usa `servir.py`, **no** `python -m http.server`. Los videos del sitio **avanzan con el scroll** (no se reproducen solos), y eso exige que el servidor soporte peticiones **Range (206)**. El `http.server` normal no las soporta, y con él los videos grandes se quedan congelados al desplazarse. (En GitHub Pages o cualquier hosting real el soporte de rangos ya viene incluido.)
 
-## Cómo publicarlo (gratis, 3 minutos)
+## Cómo publicarlo
 
-**Netlify Drop:** entra a `app.netlify.com/drop` y arrastra **toda esta carpeta** (incluye los archivos `_redirects` y `_headers`, que son obligatorios: el primero hace el puente `/api/exec` hacia el backend de reservas y el segundo evita que el catálogo se sirva con una versión vieja). Te da un enlace `https://algo.netlify.app` para compartir por WhatsApp, TikTok y Facebook.
+El sitio vive en **GitHub Pages**, con el dominio propio **https://gocarspensilvania.com**.
+Publicar un cambio son 3 comandos:
 
-> 🔁 Si el catálogo o el sitio ya estaban publicados, al volver a arrastrar la carpeta Netlify publica la versión nueva y (con `_headers`) los visitantes la ven de inmediato, sin caché vieja.
+```bash
+cd C:/Users/ricar/go-cars-pensilvania/sitio-web
+git add -A && git commit -m "describe el cambio"
+git push
+```
 
-Después puedes conectar un dominio propio (por ejemplo `gocarspensilvania.com`).
+GitHub reconstruye solo en **~40 segundos**. No hay que subir archivos a mano ni arrastrar carpetas.
 
 ## Estructura
 
@@ -103,23 +108,25 @@ git add -A && git commit -m "describe el cambio"
 git push
 ```
 
-GitHub Pages reconstruye solo en ~1 minuto. **No hay límite de ancho de banda** (a diferencia
-de Netlify, que bloqueó los despliegues por créditos agotados).
+GitHub Pages reconstruye solo en ~1 minuto. El plan gratuito permite **100 GB de tráfico al mes**
+(de sobra: el catálogo pesa ~1,4 MB por visita).
 
 ### Puntos importantes de este hosting
 
 - **`.nojekyll`** en la raíz: obliga a GitHub a servir los archivos tal cual (sin procesarlos con Jekyll).
-- **El catálogo detecta el hosting**: si NO está en Netlify, llama directo al Apps Script (JSONP)
-  y se salta el puente `/api/exec`. Es lo que hace que las reservas funcionen en GitHub Pages.
-- Los archivos `_headers` y `_redirects` son exclusivos de Netlify; aquí se ignoran.
-- **La insignia "Powered by Netlify" no existe en GitHub Pages** (no hay que ocultarla).
+- **El catálogo llama directo al Apps Script** (primero `fetch` y, si falla, JSONP). Ya no existe
+  el puente `/api/exec` ni detección de hosting: hay un solo camino, y funciona en GitHub Pages.
+- `_headers`, `_redirects` y `.netlify/` se eliminaron (sep-2026): eran exclusivos de Netlify.
 - El video de portada se sirve con soporte de rangos (HTTP 206), necesario para que el video
   avance con el scroll. Verificado.
 
-### Netlify queda como respaldo
+### Netlify: retirado (sep-2026)
 
-https://gocarspensilvania.netlify.app — sigue en línea, pero **no acepta despliegues nuevos**
-hasta reponer créditos. Sólo se puede actualizar con `npx netlify-cli@latest deploy --prod --dir=.`
+`https://gocarspensilvania.netlify.app` **ya no se usa ni se puede actualizar**: la cuenta agotó los
+300 créditos/mes del plan gratis y rechaza todo despliegue con `JSONHTTPError: Forbidden`.
+Se retiró del sitio (la imagen de WhatsApp apuntaba ahí, el puente `/api/exec`, y el CSS/JS que
+ocultaba su insignia) y se borraron `_headers`, `_redirects` y `.netlify/`.
+El sitio oficial es **https://gocarspensilvania.com**. No intentar `netlify-cli deploy` otra vez.
 
 ### Peso de los videos (optimizados sep-2026)
 
