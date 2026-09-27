@@ -201,6 +201,7 @@ h1,h2,h3,h4,.osw{font-family:'Oswald Local','Oswald',Impact,sans-serif;text-tran
 .plan.hot .p-name,.plan.hot .p-desc{color:var(--cream)}
 .plan .flag{position:absolute;top:-11px;right:16px;background:var(--orange);color:#fff;border-radius:999px;white-space:nowrap;
   padding:5px 12px;font-family:'Oswald Local','Oswald',sans-serif;text-transform:uppercase;font-size:10px;letter-spacing:.14em}
+.plan .flag.ellas{background:var(--coffee)}
 .p-name{font-family:'Oswald Local','Oswald',sans-serif;text-transform:uppercase;font-weight:600;font-size:17px;color:var(--green)}
 /* el TIEMPO de recorrido, resaltado en color de marca */
 .p-dur{align-self:flex-start;display:inline-block;margin-top:11px;line-height:1;
@@ -789,6 +790,7 @@ const PLANS = [
   {k:'G2', n:'Plan Refrigerio',      t:'60 min',    d:'refrigerio en el camino', p:110000},
   {k:'G3', n:'Plan Mazamorrada',     t:'80 min',    d:'parada con mazamorra regional', p:140000},
   {k:'G4', n:'Plan con paradas',     t:'2 horas',   d:'degustación de productos locales y parada en miradores naturales', p:180000, hot:true},
+  {k:'G6', n:'Plan Ellas Aventura', t:'2 horas',   d:'ancheta y refrigerio en el camino', p:140000, ellas:true},
   {k:'G5', n:'Plan Fiesta / Grupal', t:'Medio día', d:'experiencia completa', p:700000, grupal:true}
 ];
 
@@ -863,7 +865,7 @@ const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 $('#planesGrid').innerHTML = PLANS.map(p=>`
   <a class="plan ${p.hot?'hot':''}" href="catalogo.html?plan=${p.k}"
      title="Reservar el ${p.n} en el catálogo digital">
-    ${p.hot?'<span class="flag">Más recomendado</span>':''}
+    ${p.hot?'<span class="flag">Más recomendado</span>':''}${p.ellas?'<span class="flag ellas">Solo para ellas</span>':''}
     <div class="p-name">${p.n}</div>
     <div class="p-dur">${p.t}</div>
     <div class="p-desc">${p.d}</div>

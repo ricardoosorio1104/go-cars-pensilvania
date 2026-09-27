@@ -56,6 +56,9 @@
     box-shadow:0 3px 10px rgba(20,68,46,.22)}
   .opt .dur b{font-size:13.5px;font-weight:700;line-height:1}
   .opt .dur span{font-size:10.5px;font-weight:500;opacity:.82;line-height:1}
+  .opt .seal{display:inline-flex;align-self:flex-start;background:var(--coffee);color:#fff;border-radius:20px;
+    padding:3px 10px;margin-bottom:6px;font-family:'Oswald',sans-serif;text-transform:uppercase;
+    letter-spacing:.7px;font-size:10px;font-weight:600}
   .opt.on .dur{background:var(--orange);box-shadow:0 3px 10px rgba(245,96,11,.3)}
   .opt .p{font-family:'Oswald',sans-serif;font-weight:700;font-size:16px;color:var(--orange);margin-top:10px;align-self:flex-start}
 /* Segunda linea del precio (ej. Plan Fiesta: "por los 4 cars · medio dia") para que quepa en celular */
@@ -374,6 +377,10 @@ const PLANS = {
   G2:{n:'Plan Refrigerio',      dur:'60 min',    d:'refrigerio en el camino', p:110000, m:60},
   G3:{n:'Plan Mazamorrada',     dur:'80 min',    d:'parada con mazamorra regional', p:140000, m:80},
   G4:{n:'Plan con paradas',     dur:'2 h',       d:'degustación de productos locales y parada en miradores naturales', p:180000, m:120},
+  // Plan solo para ellas: 2 h con ancheta + refrigerio, POR CAR (no es grupal).
+  // OJO: el backend saca la duración del NOMBRE del plan (DURACION en el .gs):
+  // si este plan se renombra, hay que actualizar allá y volver a implementar.
+  G6:{n:'Plan Ellas Aventura', dur:'2 h', d:'ancheta y refrigerio en el camino', p:140000, m:120, ellas:true},
   // El Plan Fiesta (grupal) NO es precio por car: vale por el alquiler de los 4 cars medio día.
   G5:{n:'Plan Fiesta / Grupal', dur:'Medio día', d:'experiencia completa', p:700000, m:240, grupal:true, u:'los 4 cars · medio día'}
 };
@@ -434,7 +441,8 @@ function renderPlans(){
   for(const [k,v] of Object.entries(PLANS)){
     const el=document.createElement('div');
     el.className='opt'+(plan===k?' on':''); el.dataset.k=k;
-    el.innerHTML=`<div class="dur"><b>${v.dur}</b><span>de recorrido</span></div>`+
+    el.innerHTML=(v.ellas?`<div class="seal">Solo para ellas</div>`:'')+
+                 `<div class="dur"><b>${v.dur}</b><span>de recorrido</span></div>`+
                  `<div class="t">${v.n}</div><div class="d">${v.d}</div><div class="p">${fmt(v.p)}${v.u?`<small>por ${v.u}</small>`:' / car'}</div>`;
     el.onclick=()=>{plan=k;aplicarPlanGrupal();renderPlans();check();refrescarDisponibilidad();};
     $('#plans').appendChild(el);
