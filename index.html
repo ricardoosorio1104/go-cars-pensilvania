@@ -255,9 +255,19 @@ a.plan:hover .p-go i,a.plan:focus-visible .p-go i{transform:translateX(5px)}
 .gal-grid button:hover img{transform:scale(1.07)}
 .gal-grid button.wide{grid-column:span 2;aspect-ratio:3/2}
 .gal-grid button.tall{grid-row:span 2;aspect-ratio:3/4}
+.gal-grid button{position:relative}
+.gal-grid button video{width:100%;height:100%;object-fit:cover;display:block}
+/* Botón de reproducir: círculo naranja de marca con el triángulo de la marca;
+   los dos van en la MISMA celda del grid (grid-area:1/1) para quedar centrados. */
+.gal-grid .play{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.gal-grid .play::before{content:'';grid-area:1/1;width:52px;height:52px;border-radius:50%;background:rgba(245,96,11,.94);box-shadow:0 10px 26px rgba(0,0,0,.35);transition:transform .35s}
+.gal-grid .play svg{grid-area:1/1;width:22px;height:22px;fill:var(--cream,#F4EEE3);margin-left:3px}
+.gal-grid button:hover .play::before{transform:scale(1.1)}
+.gal-grid .tagv{position:absolute;left:10px;bottom:10px;background:rgba(20,30,26,.82);color:var(--cream,#F4EEE3);font-family:'Oswald Local','Oswald',sans-serif;text-transform:uppercase;letter-spacing:.1em;font-size:10px;padding:4px 9px;border-radius:20px;line-height:1;pointer-events:none}
 .lightbox{position:fixed;inset:0;z-index:90;background:rgba(10,18,15,.94);display:none;place-items:center;padding:24px}
 .lightbox.on{display:grid}
 .lightbox img{max-width:min(1100px,92vw);max-height:86vh;border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.lightbox video{max-width:min(1100px,92vw);max-height:86vh;border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.6);background:#000}
 .lightbox .x{position:absolute;top:22px;right:26px;font-size:26px;color:var(--cream);font-family:'Oswald Local','Oswald',sans-serif}
 .lightbox .nav-i{position:absolute;top:50%;transform:translateY(-50%);font-size:34px;color:rgba(244,238,227,.8);padding:10px 18px}
 .lightbox .prev{left:8px}.lightbox .next{right:8px}
@@ -779,6 +789,7 @@ footer ul{list-style:none;display:grid;gap:9px}
   <button class="x" id="lbClose" aria-label="Cerrar">✕</button>
   <button class="nav-i prev" id="lbPrev" aria-label="Anterior">‹</button>
   <img id="lbImg" src="" alt="Galería GO CARS Pensilvania">
+  <video id="lbVid" controls playsinline muted preload="metadata" style="display:none"></video>
   <button class="nav-i next" id="lbNext" aria-label="Siguiente">›</button>
 </div>
 
@@ -850,18 +861,22 @@ const ROUTES = [
 ];
 
 const GALLERY = [
-  {src:'assets/img/galeria/gal-pinos-atardecer.jpg', alt:'Car entre los pinos con los rayos del atardecer',        wide:false},
-  {src:'assets/img/galeria/gal-curva-montana.jpg',   alt:'Car subiendo una curva de montaña con vista al valle',    wide:false},
-  {src:'assets/img/galeria/gal-car-sendero.jpg',     alt:'Car en el sendero de pinos al caer la tarde',             wide:false},
-  {src:'assets/img/galeria/gal-car-rodando.jpg',     alt:'Cars rodando por camino de piedra en la montaña',         wide:false},
-  {src:'assets/img/galeria/gal-valle-mirador.jpg',   alt:'Mirador con banderines y vista al valle de Pensilvania',  wide:false},
-  {src:'assets/img/galeria/gal-piloto-2.jpg',        alt:'Piloto con su car y las montañas de Caldas de fondo',     wide:false},
-  {src:'assets/img/galeria/gal-car-pinar.jpg',       alt:'Car con bandera en la trocha, listo para la ruta',        wide:false},
-  {src:'assets/img/galeria/gal-trocha-bosque.jpg',   alt:'Trocha entre la vegetación nativa camino a Pueblo Nuevo', wide:false},
-  {src:'assets/img/galeria/gal-piloto-trocha.jpg',   alt:'La trocha vista desde el car en plena rodada',            wide:false},
-  {src:'assets/img/galeria/gal-refrigerio.jpg',      alt:'Refrigerio campestre durante el recorrido',               wide:false},
-  {src:'assets/img/galeria/gal-carros-calle.jpg',    alt:'Cars GO CARS saliendo por las calles de Pensilvania',     wide:false},
-  {src:'assets/img/galeria/gal-trocha-niebla.jpg',   alt:'Car en la trocha con la niebla de la mañana',             wide:false}
+  {src:'assets/img/galeria/gal-pinos-atardecer.jpg', alt:'Car entre los pinos con los rayos del atardecer', wide:false},
+  {src:'assets/videos/rodada-trocha.jpg', alt:'Clip: rodada por la trocha de montaña', video:'assets/videos/rodada-trocha.mp4', dur:'13 s', wide:false},
+  {src:'assets/img/galeria/gal-curva-montana.jpg', alt:'Car subiendo una curva de montaña con vista al valle', wide:false},
+  {src:'assets/img/galeria/gal-car-sendero.jpg', alt:'Car en el sendero de pinos al caer la tarde', wide:false},
+  {src:'assets/img/galeria/gal-car-rodando.jpg', alt:'Cars rodando por camino de piedra en la montaña', wide:false},
+  {src:'assets/img/galeria/gal-valle-mirador.jpg', alt:'Mirador con banderines y vista al valle de Pensilvania', wide:false},
+  {src:'assets/videos/gal-01.jpg', alt:'Clip: la gente, los cars y las montañas', video:'assets/videos/gal-01.mp4', dur:'18 s', wide:false},
+  {src:'assets/img/galeria/gal-piloto-2.jpg', alt:'Piloto con su car y las montañas de Caldas de fondo', wide:false},
+  {src:'assets/img/galeria/gal-car-pinar.jpg', alt:'Car con bandera en la trocha, listo para la ruta', wide:false},
+  {src:'assets/img/galeria/gal-trocha-bosque.jpg', alt:'Trocha entre la vegetación nativa camino a Pueblo Nuevo', wide:false},
+  {src:'assets/videos/gal-02.jpg', alt:'Clip: rodada entre la niebla de la mañana', video:'assets/videos/gal-02.mp4', dur:'18 s', wide:false},
+  {src:'assets/img/galeria/gal-piloto-trocha.jpg', alt:'La trocha vista desde el car en plena rodada', wide:false},
+  {src:'assets/img/galeria/gal-refrigerio.jpg', alt:'Refrigerio campestre durante el recorrido', wide:false},
+  {src:'assets/videos/gal-03.jpg', alt:'Clip: alistando los cars antes de la salida', video:'assets/videos/gal-03.mp4', dur:'16 s', wide:false},
+  {src:'assets/img/galeria/gal-carros-calle.jpg', alt:'Cars GO CARS saliendo por las calles de Pensilvania', wide:false},
+  {src:'assets/img/galeria/gal-trocha-niebla.jpg', alt:'Car en la trocha con la niebla de la mañana', wide:false},
 ];
 
 const $ = s => document.querySelector(s);
@@ -893,8 +908,23 @@ $('#rutasGrid').innerHTML = ROUTES.map((r,i)=>`
     </div>
   </button>`).join('');
 
-$('#galGrid').innerHTML = GALLERY.map((g,i)=>`
-  <button class="${g.wide?'wide':''}" data-g="${i}"><img src="${g.src}" alt="${g.alt}" loading="lazy"></button>`).join('');
+/* La galería mezcla fotos y clips: los clips llevan póster + botón de reproducir,
+   y se previsualizan (sin audio) al pasar el mouse. preload="none": el video
+   sólo se descarga si el visitante pasa el mouse o lo abre. */
+const PLAY_ICO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+$('#galGrid').innerHTML = GALLERY.map((g,i)=> g.video
+  ? `<button class="gal-v" data-g="${i}" aria-label="${g.alt}">`+
+      `<video src="${g.video}" poster="${g.src}" muted playsinline loop preload="none"></video>`+
+      `<span class="play">${PLAY_ICO}</span><span class="tagv">Clip · ${g.dur}</span></button>`
+  : `<button class="${g.wide?'wide':''}" data-g="${i}"><img src="${g.src}" alt="${g.alt}" loading="lazy"></button>`).join('');
+/* Vista previa al pasar el mouse (sólo si el sistema no pide menos movimiento) */
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.querySelectorAll('#galGrid .gal-v').forEach(b=>{
+    const v=b.querySelector('video');
+    b.addEventListener('mouseenter',()=>{ v.currentTime=0; v.play().catch(()=>{}); });
+    b.addEventListener('mouseleave',()=> v.pause());
+  });
+}
 
 /* links de WhatsApp dinámicos */
 document.querySelectorAll('[data-wa]').forEach(a=>{
@@ -993,10 +1023,25 @@ const lb = $('#lb');
 function showLb(i){
   gi = (i + GALLERY.length) % GALLERY.length;
   const yaGal = capaOn('lb');
-  $('#lbImg').src = GALLERY[gi].src; $('#lbImg').alt = GALLERY[gi].alt;
+  const g = GALLERY[gi], img = $('#lbImg'), vid = $('#lbVid');
+  if (g.video){
+    /* Clip: el visor muestra el video con controles. El clic del visitante es el gesto
+       que permite reproducirlo. Los clips del sitio van SIN audio. */
+    img.style.display='none'; img.removeAttribute('src');
+    vid.style.display=''; vid.poster=g.src;
+    if (vid.getAttribute('src') !== g.video) vid.setAttribute('src', g.video);
+    vid.currentTime = 0; vid.play().catch(()=>{});
+  } else {
+    vid.pause(); vid.style.display='none'; vid.removeAttribute('src');
+    img.style.display=''; img.src=g.src; img.alt=g.alt;
+  }
   lb.classList.add('on');
   if (!yaGal) capaPush();                    // el "atrás" cierra la galeria
 }
+/* Cerrar el visor de cualquier forma (✕, tocar fuera, Escape o el botón ATRÁS del
+   navegador) tiene que detener el video: el observador cubre todos los caminos. */
+new MutationObserver(()=>{ if(!lb.classList.contains('on')) $('#lbVid').pause(); })
+  .observe(lb, {attributes:true, attributeFilter:['class']});
 $('#galGrid').addEventListener('click', e=>{
   const b = e.target.closest('[data-g]'); if(b) showLb(+b.dataset.g);
 });
