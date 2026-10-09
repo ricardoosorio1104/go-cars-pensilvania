@@ -54,7 +54,7 @@ sitio-web/
 | Rutas | Las 9 rutas con mapa satelital; al tocar una se abre su ficha completa (experiencia, «Qué incluye» y «Opcional») |
 | Planes | Los 5 planes con precios por car |
 | Catálogo digital | Mockup de navegador con el catálogo embebido + botón para abrirlo |
-| Galería | 12 **fotos reales** de las rutas (tomadas del TikTok @gocarspensilvania) con visor (lightbox) |
+| Galería | 12 **fotos** + 4 **clips de video** reales de las rutas (del TikTok @gocarspensilvania). Los clips se previsualizan al pasar el mouse y se abren en el visor |
 | Contacto | WhatsApp **315 220 5659**, WhatsApp **320 738 4581**, correo **gocarspensilvania@gmail.com** · dirección: **Calle 5 # 4-42, Pensilvania, Caldas** · redes: **TikTok @gocarspensilvania** y **fanpage de Facebook: https://www.facebook.com/profile.php?id=61593590381138** |
 
 ## Cómo editar el contenido
@@ -137,7 +137,10 @@ El sitio oficial es **https://gocarspensilvania.com**. No intentar `netlify-cli 
 | clip-01.mp4 (540x960, 22 s) | 3,1 MB | Clip del film · sendero entre pinos (Ruta 2) |
 | clip-02.mp4 (540x960, 24 s) | 2,7 MB | Clip del film · camino de tierra |
 | clip-03.mp4 (540x960, 20 s) | 1,9 MB | Clip del film · el valle y el refrigerio |
-| **Total** | **10,8 MB** | (antes 12,8 MB) |
+| gal-01.mp4 (540x960) | 1,0 MB | Clip de la galería (carga diferida, sólo al interactuar) |
+| gal-02.mp4 (540x960) | 1,2 MB | Clip de la galería |
+| gal-03.mp4 (540x960) | 1,5 MB | Clip de la galería |
+| **Total** | **14,5 MB** | (antes 12,8 MB; los clips de la galería no se descargan solos) |
 
 Script: `_tiktok/encode_sitio.sh` (fuera del repo). Mantiene keyframes densos (`-g 12` a `-g 18`)
 para que el scroll avance el video con fluidez; la portada usa `crf 34` y los clips `crf 32`.
@@ -146,13 +149,29 @@ para que el scroll avance el video con fluidez; la portada usa `crf 34` y los cl
 > ruta) se muestran junto al clip del mismo índice: `clip-01` ↔ primer `film-cap`, y así.
 > Si cambias un video, cambia su descripción o el clip quedará anunciando otra ruta.
 
-### Galería: fotos reales (oct-2026)
+### Galería: fotos y clips reales (oct-2026)
 
 Las 12 fotos de `assets/img/galeria/` salen del TikTok **@gocarspensilvania** (carruseles y
 fotogramas de los videos). Para reemplazar una: deja el archivo con el **mismo nombre** y
 máximo 1200 px de ancho, o cambia la ruta en el array `GALLERY`.
 Las tarjetas recortan en **3:4 desde el centro** (`object-fit:cover`): si el sujeto (el car)
 queda muy arriba o muy abajo en la foto, en la cuadrícula no se verá.
+
+**Los clips** son 4 piezas del mismo array, con dos campos extra:
+
+```js
+{src:'assets/videos/gal-01.jpg',      // póster (el .jpg se genera al codificar)
+ alt:'Clip: la gente, los cars y las montañas',
+ video:'assets/videos/gal-01.mp4',    // el clip
+ dur:'18 s', wide:false},             // lo que muestra la etiqueta "Clip · 18 s"
+```
+
+- `preload="none"` + póster: **el clip no se descarga** hasta que el visitante pasa el mouse o
+  lo abre (por eso la galería puede tener varios videos sin encarecer la entrada al sitio).
+- Los clips van **sin audio** (`-an`), igual que los del scroll; el visor los abre en `muted`
+  para que el navegador nunca bloquee la reproducción.
+- Al cerrar el visor (✕, tocar fuera, Escape o el **botón atrás**) un `MutationObserver`
+  pausa el video: cubre todos los caminos de cierre con una sola regla.
 
 
 ---
