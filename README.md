@@ -137,10 +137,10 @@ El sitio oficial es **https://gocarspensilvania.com**. No intentar `netlify-cli 
 | clip-01.mp4 (540x960, 22 s) | 3,1 MB | Clip del film · sendero entre pinos (Ruta 2) |
 | clip-02.mp4 (540x960, 24 s) | 2,7 MB | Clip del film · camino de tierra |
 | clip-03.mp4 (540x960, 20 s) | 1,9 MB | Clip del film · el valle y el refrigerio |
-| gal-01.mp4 (540x960) | 1,0 MB | Clip de la galería (carga diferida, sólo al interactuar) |
-| gal-02.mp4 (540x960) | 1,2 MB | Clip de la galería |
-| gal-03.mp4 (540x960) | 1,5 MB | Clip de la galería |
-| **Total** | **14,5 MB** | (antes 12,8 MB; los clips de la galería no se descargan solos) |
+| gal-01.mp4 (540x960, 13 s) | 0,84 MB | Clip de la galería: la gente, los cars y las montañas |
+| gal-02.mp4 (540x960, 18 s) | 2,5 MB | Clip de la galería: los cars saliendo por la trocha |
+| gal-03.mp4 (540x960, 16 s) | 1,5 MB | Clip de la galería: alistando los cars |
+| **Total en el repo** | **15,7 MB** | Los 4 clips de la galería **no se descargan solos** (`preload="none"`): sólo al pasar el mouse o al abrirlos |
 
 Script: `_tiktok/encode_sitio.sh` (fuera del repo). Mantiene keyframes densos (`-g 12` a `-g 18`)
 para que el scroll avance el video con fluidez; la portada usa `crf 34` y los clips `crf 32`.
