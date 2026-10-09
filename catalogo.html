@@ -59,6 +59,7 @@
   .opt .seal{display:inline-flex;align-self:flex-start;background:var(--coffee);color:#fff;border-radius:20px;
     padding:3px 10px;margin-bottom:6px;font-family:'Oswald',sans-serif;text-transform:uppercase;
     letter-spacing:.7px;font-size:10px;font-weight:600}
+  .opt .seal.hot{background:var(--orange)}
   .opt.on .dur{background:var(--orange);box-shadow:0 3px 10px rgba(245,96,11,.3)}
   .opt .p{font-family:'Oswald',sans-serif;font-weight:700;font-size:16px;color:var(--orange);margin-top:10px;align-self:flex-start}
 /* Segunda linea del precio (ej. "por car · 1 persona" / "te lo cotizamos por WhatsApp") para que quepa en celular */
@@ -238,7 +239,7 @@
     <h3 class="sec-title"><span class="n">1</span> ¿Qué te interesa?</h3>
     <div class="grid" id="plans"></div>
 
-    <h4 style="font-family:'Oswald',sans-serif;font-weight:600;text-transform:uppercase;font-size:15px;letter-spacing:.4px;color:var(--coffee);margin:24px 0 4px;">Salidas grupales · a cotizar</h4>
+    <h4 style="font-family:'Oswald',sans-serif;font-weight:600;text-transform:uppercase;font-size:15px;letter-spacing:.4px;color:var(--coffee);margin:24px 0 4px;">Salidas grupales · cotizar</h4>
     <p style="font-size:12.5px;color:rgba(30,35,39,.6);margin:0 0 12px;line-height:1.5;">Planes independientes para grupos. Se cotizan según el tamaño del grupo y la fecha.</p>
     <div class="grid" id="planesGrupo"></div>
   </section>
@@ -365,10 +366,10 @@ const SLOTS = ['07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30',
 const PLANS = {
   G1:{n:'Plan Básico',   dur:'40 min',     d:'recorrido por la montaña', p:50000, m:40},
   G2:{n:'Plan Aventura', dur:'1 h 10 min', d:'más camino y más paisaje', p:85000, m:70},
-  G3:{n:'Plan Pro',      dur:'1 h 30 min', d:'refrigerio + parada de fotos', p:115000, m:90, hot:true},
-  G4:{n:'Plan Pantágora', dur:'2 h',        d:'recorrido completo + refrigerio + parada de fotos', p:155000, m:120},
+  G3:{n:'Plan Pro',      dur:'1 h 30 min', d:'refrigerio + parada de fotos', p:115000, m:90},
+  G4:{n:'Plan Pantágora', dur:'2 h',        d:'recorrido completo + refrigerio + parada de fotos', p:155000, m:120, hot:true},
   /* SALIDAS GRUPALES — INDEPENDIENTES de los planes por car: se COTIZAN.
-     p:null + cotizar:true → el catálogo muestra "A cotizar" y NO calcula total.
+     p:null + cotizar:true → el catálogo muestra "Cotizar" y NO calcula total.
      grupo:true → se pintan en su propio bloque (id="planesGrupo"), separadas.
      OJO: el backend saca la duración del NOMBRE del plan (DURACION en el .gs):
      si un plan se renombra, hay que actualizar allá y volver a implementar. */
@@ -432,18 +433,20 @@ function renderPlans(){
   for(const [k,v] of Object.entries(PLANS)){
     const el=document.createElement('div');
     el.className='opt'+(plan===k?' on':''); el.dataset.k=k;
-    el.innerHTML=(v.ellas?`<div class="seal">Solo para ellas</div>`:'')+
+    el.innerHTML=(v.hot?`<div class="seal hot">Más recomendado</div>`:'')+(v.ellas?`<div class="seal">Solo para ellas</div>`:'')+
                  `<div class="dur"><b>${v.dur}</b>${/convenir/i.test(v.dur)?'':'<span>de recorrido</span>'}</div>`+
-                 `<div class="t">${v.n}</div><div class="d">${v.d}</div><div class="p">${v.cotizar?'A cotizar':fmt(v.p)}${v.cotizar?'<small>te lo cotizamos por WhatsApp</small>':(v.u?`<small>por ${v.u}</small>`:'<small>por car · 1 persona</small>')}</div>`;
+                 `<div class="t">${v.n}</div><div class="d">${v.d}</div><div class="p">${v.cotizar?'Cotizar':fmt(v.p)}${v.cotizar?'<small>te lo cotizamos por WhatsApp</small>':(v.u?`<small>por ${v.u}</small>`:'<small>por car · 1 persona</small>')}</div>`;
     el.onclick=()=>{plan=k;aplicarPlanGrupal();renderPlans();check();refrescarDisponibilidad();};
     // Los grupales van a su propio bloque: quedan INDEPENDIENTES de los planes por car.
     (v.grupo ? $('#planesGrupo') : $('#plans')).appendChild(el);
   }
 }
-/* Las SALIDAS GRUPALES ya no tienen precio por car: son "A cotizar" (p:null + cotizar:true),
-   así que el total nunca se multiplica. Se conserva el bloqueo por si algún plan vuelve
-   a marcarse con grupal:true (fijaría todos los cars de la flota). */
-function planEsGrupal(){ return !!(plan && PLANS[plan].grupal); }
+/* Las SALIDAS GRUPALES no tienen precio por car: son "Cotizar" (p:null + cotizar:true),
+   así que el total nunca se multiplica. Al elegirlas se fijan TODOS los cars de la flota
+   (6) y el contador queda bloqueado: son salidas para el grupo completo.
+   OJO: acepta las dos banderas —`grupo` (actual) y `grupal` (antigua)—; si se mira solo la
+   vieja, el plan grupal arranca con 1 car y el mensaje de WhatsApp pide 1 car en vez de 6. */
+function planEsGrupal(){ return !!(plan && (PLANS[plan].grupo || PLANS[plan].grupal || PLANS[plan].cotizar)); }
 function aplicarPlanGrupal(){
   const g=planEsGrupal();
   if(g) cars=CAPACIDAD; else if(cars>CAPACIDAD) cars=CAPACIDAD;
@@ -772,7 +775,7 @@ $('#send').onclick=()=>{
   if(!plan||!route){toast('Elige plan y ruta primero');return;}
   const p=PLANS[plan];
   const nombre=$('#nombre').value.trim(), tel=$('#telefono').value.trim();
-  // Las salidas grupales (A cotizar) no tienen precio fijo: se cotizan por WhatsApp.
+  // Las salidas grupales (Cotizar) no tienen precio fijo: se cotizan por WhatsApp.
   const total = p.cotizar ? null : p.p*cars;
   // "a convenir" (Plan Solo Ellas) se lee mejor como frase que como duración suelta.
   const durTxt = /convenir/i.test(p.dur) ? 'duración a convenir' : p.dur+' de recorrido';
@@ -784,7 +787,7 @@ $('#send').onclick=()=>{
 `*Plan:* ${p.n} · ${durTxt} (${p.d})\n`+
 `*Ruta:* ${ROUTES[route].n}\n`+
 `*Cars (1 persona por car):* ${cars}\n`+
-`*Total:* ${p.cotizar?'A cotizar con ustedes':fmt(total)+(cars>1?` (${fmt(p.p)} × ${cars})`:'')}\n\n`+
+`*Total:* ${p.cotizar?'Cotizar con ustedes':fmt(total)+(cars>1?` (${fmt(p.p)} × ${cars})`:'')}\n\n`+
 `¿Qué fechas y horas tienen disponibles?\n\n`+
 `👤 *${nombre||'—'}* · ${tel||'—'}`;
 

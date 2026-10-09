@@ -447,7 +447,7 @@ footer ul{list-style:none;display:grid;gap:9px}
       <a class="btn btn-ghost" href="#catalogo">Ver el catálogo</a>
     </div>
     <div class="hero-badges">
-      <span><b>4</b> cars monoplaza</span>
+      <span><b>6</b> cars monoplaza</span>
       <span><b>Casco + seguro</b> por recorrido</span>
       <span><b>9</b> rutas de montaña</span>
       <span>Anticipo <b>$30.000</b></span>
@@ -569,7 +569,7 @@ footer ul{list-style:none;display:grid;gap:9px}
     </div>
     <div class="planes-grid" id="planesGrid"></div>
 
-    <h3 style="font-family:'Oswald',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.4px;font-size:19px;color:var(--green,#14442E);margin:34px 0 4px;">Salidas grupales · a cotizar</h3>
+    <h3 style="font-family:'Oswald',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.4px;font-size:19px;color:var(--green,#14442E);margin:34px 0 4px;">Salidas grupales · cotizar</h3>
     <p style="font-size:14.5px;color:rgba(30,35,39,.65);margin:0 0 16px;line-height:1.5;">Dos planes independientes para grupos. Se cotizan según el tamaño del grupo y la fecha.</p>
     <div class="planes-grid" id="planesGrupoGrid"></div>
 
@@ -793,8 +793,8 @@ const MSG_ADV = encodeURIComponent('Hola GO CARS Pensilvania 🤝 todavía no s�
 const PLANS = [
   {k:'G1', n:'Plan Básico',   t:'40 min',     d:'recorrido por la montaña', p:50000},
   {k:'G2', n:'Plan Aventura', t:'1 h 10 min', d:'más camino y más paisaje', p:85000},
-  {k:'G3', n:'Plan Pro',      t:'1 h 30 min', d:'refrigerio + parada de fotos', p:115000, hot:true},
-  {k:'G4', n:'Plan Pantágora', t:'2 h',        d:'recorrido completo + refrigerio + parada de fotos', p:155000},
+  {k:'G3', n:'Plan Pro',      t:'1 h 30 min', d:'refrigerio + parada de fotos', p:115000},
+  {k:'G4', n:'Plan Pantágora', t:'2 h',        d:'recorrido completo + refrigerio + parada de fotos', p:155000, hot:true},
   /* Salidas grupales: INDEPENDIENTES de los planes por car y A COTIZAR.
      grupo:true → se pintan en su propio bloque (id="planesGrupoGrid"). */
   {k:'G6', n:'Plan Solo Ellas',      t:'a convenir', d:'6 cars · salida grupal · refrigerio + obsequio sorpresa', p:null, cotizar:true, grupo:true},
@@ -876,7 +876,7 @@ const planCard = p=>`
     <div class="p-name">${p.n}</div>
     <div class="p-dur">${p.t}</div>
     <div class="p-desc">${p.d}</div>
-    <div class="p-price">${p.cotizar?'A cotizar':fmt(p.p)}<small>${p.cotizar?'te lo cotizamos por WhatsApp':'por car · 1 persona'}</small></div>
+    <div class="p-price">${p.cotizar?'Cotizar':fmt(p.p)}<small>${p.cotizar?'te lo cotizamos por WhatsApp':'por car · 1 persona'}</small></div>
     <span class="p-go">Reservar este plan <i aria-hidden="true">→</i></span>
   </a>`;
 $('#planesGrid').innerHTML      = PLANS.filter(p=>!p.grupo).map(planCard).join('');
