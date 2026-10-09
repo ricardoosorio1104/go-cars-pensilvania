@@ -625,8 +625,8 @@ footer ul{list-style:none;display:grid;gap:9px}
   <div class="wrap">
     <div class="sec-head rv">
       <div class="kicker">Galería</div>
-      <h2 class="h2">Paisajes, cars y paradas</h2>
-      <p class="lead">La montaña de Pensilvania, nuestros cars y los sabores del camino.</p>
+      <h2 class="h2">La ruta, en video</h2>
+      <p class="lead">Clips reales de nuestras trochas, de los cars y de la gente que sale con nosotros. Toca uno para verlo completo.</p>
     </div>
     <div class="gal-grid" id="galGrid"></div>
   </div>
@@ -860,23 +860,21 @@ const ROUTES = [
   o:['Paradas en miradores naturales para contemplar el paisaje cordillerano']}
 ];
 
+/* Galería SOLO de video (oct-2026): 12 clips reales del TikTok @gocarspensilvania.
+   Se quitaron las fotos a pedido del negocio. `src` es el póster de cada clip. */
 const GALLERY = [
-  {src:'assets/img/galeria/gal-pinos-atardecer.jpg', alt:'Car entre los pinos con los rayos del atardecer', wide:false},
-  {src:'assets/videos/rodada-trocha.jpg', alt:'Clip: rodada por la trocha de montaña', video:'assets/videos/rodada-trocha.mp4', dur:'13 s', wide:false},
-  {src:'assets/img/galeria/gal-curva-montana.jpg', alt:'Car subiendo una curva de montaña con vista al valle', wide:false},
-  {src:'assets/img/galeria/gal-car-sendero.jpg', alt:'Car en el sendero de pinos al caer la tarde', wide:false},
-  {src:'assets/img/galeria/gal-car-rodando.jpg', alt:'Cars rodando por camino de piedra en la montaña', wide:false},
-  {src:'assets/img/galeria/gal-valle-mirador.jpg', alt:'Mirador con banderines y vista al valle de Pensilvania', wide:false},
-  {src:'assets/videos/gal-01.jpg', alt:'Clip: la gente, los cars y las montañas', video:'assets/videos/gal-01.mp4', dur:'13 s', wide:false},
-  {src:'assets/img/galeria/gal-piloto-2.jpg', alt:'Piloto con su car y las montañas de Caldas de fondo', wide:false},
-  {src:'assets/img/galeria/gal-car-pinar.jpg', alt:'Car con bandera en la trocha, listo para la ruta', wide:false},
-  {src:'assets/img/galeria/gal-trocha-bosque.jpg', alt:'Trocha entre la vegetación nativa camino a Pueblo Nuevo', wide:false},
-  {src:'assets/videos/gal-02.jpg', alt:'Clip: los cars saliendo por la trocha', video:'assets/videos/gal-02.mp4', dur:'18 s', wide:false},
-  {src:'assets/img/galeria/gal-piloto-trocha.jpg', alt:'La trocha vista desde el car en plena rodada', wide:false},
-  {src:'assets/img/galeria/gal-refrigerio.jpg', alt:'Refrigerio campestre durante el recorrido', wide:false},
-  {src:'assets/videos/gal-03.jpg', alt:'Clip: alistando los cars antes de la salida', video:'assets/videos/gal-03.mp4', dur:'16 s', wide:false},
-  {src:'assets/img/galeria/gal-carros-calle.jpg', alt:'Cars GO CARS saliendo por las calles de Pensilvania', wide:false},
-  {src:'assets/img/galeria/gal-trocha-niebla.jpg', alt:'Car en la trocha con la niebla de la mañana', wide:false},
+  {src:'assets/videos/gal-01.jpg', alt:'Clip: car bajando por la trocha entre los pinos', video:'assets/videos/gal-01.mp4', dur:'12 s', wide:false},
+  {src:'assets/videos/gal-02.jpg', alt:'Clip: los cars saliendo en caravana por la vía', video:'assets/videos/gal-02.mp4', dur:'12 s', wide:false},
+  {src:'assets/videos/gal-03.jpg', alt:'Clip: rodada por la calle del pueblo', video:'assets/videos/gal-03.mp4', dur:'12 s', wide:false},
+  {src:'assets/videos/gal-04.jpg', alt:'Clip: últimos metros de la rodada', video:'assets/videos/gal-04.mp4', dur:'11 s', wide:false},
+  {src:'assets/videos/gal-05.jpg', alt:'Clip: el valle visto desde la ruta', video:'assets/videos/gal-05.mp4', dur:'12 s', wide:false},
+  {src:'assets/videos/gal-06.jpg', alt:'Clip: la trocha entre los árboles altos', video:'assets/videos/gal-06.mp4', dur:'12 s', wide:false},
+  {src:'assets/videos/gal-07.jpg', alt:'Clip: el sol sobre la montaña', video:'assets/videos/gal-07.mp4', dur:'12 s', wide:false},
+  {src:'assets/videos/gal-08.jpg', alt:'Clip: mirador sobre el valle', video:'assets/videos/gal-08.mp4', dur:'8 s', wide:false},
+  {src:'assets/videos/gal-09.jpg', alt:'Clip: la parada del refrigerio en la ruta', video:'assets/videos/gal-09.mp4', dur:'12 s', wide:false},
+  {src:'assets/videos/gal-10.jpg', alt:'Clip: barro y agua en el camino', video:'assets/videos/gal-10.mp4', dur:'12 s', wide:false},
+  {src:'assets/videos/gal-11.jpg', alt:'Clip: la gente, los cars y las montañas', video:'assets/videos/gal-11.mp4', dur:'13 s', wide:false},
+  {src:'assets/videos/gal-12.jpg', alt:'Clip: alistando los cars, detalles de la máquina', video:'assets/videos/gal-12.mp4', dur:'12 s', wide:false},
 ];
 
 const $ = s => document.querySelector(s);
