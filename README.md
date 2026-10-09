@@ -54,7 +54,7 @@ sitio-web/
 | Rutas | Las 9 rutas con mapa satelital; al tocar una se abre su ficha completa (experiencia, «Qué incluye» y «Opcional») |
 | Planes | Los 5 planes con precios por car |
 | Catálogo digital | Mockup de navegador con el catálogo embebido + botón para abrirlo |
-| Galería | 12 **fotos** + 4 **clips de video** reales de las rutas (del TikTok @gocarspensilvania). Los clips se previsualizan al pasar el mouse y se abren en el visor |
+| Galería | **12 clips de video** reales de las rutas (del TikTok @gocarspensilvania), sin fotos. Se previsualizan al pasar el mouse y se abren en el visor |
 | Contacto | WhatsApp **315 220 5659**, WhatsApp **320 738 4581**, correo **gocarspensilvania@gmail.com** · dirección: **Calle 5 # 4-42, Pensilvania, Caldas** · redes: **TikTok @gocarspensilvania** y **fanpage de Facebook: https://www.facebook.com/profile.php?id=61593590381138** |
 
 ## Cómo editar el contenido
@@ -137,10 +137,8 @@ El sitio oficial es **https://gocarspensilvania.com**. No intentar `netlify-cli 
 | clip-01.mp4 (540x960, 22 s) | 3,1 MB | Clip del film · sendero entre pinos (Ruta 2) |
 | clip-02.mp4 (540x960, 24 s) | 2,7 MB | Clip del film · camino de tierra |
 | clip-03.mp4 (540x960, 20 s) | 1,9 MB | Clip del film · el valle y el refrigerio |
-| gal-01.mp4 (540x960, 13 s) | 0,84 MB | Clip de la galería: la gente, los cars y las montañas |
-| gal-02.mp4 (540x960, 18 s) | 2,5 MB | Clip de la galería: los cars saliendo por la trocha |
-| gal-03.mp4 (540x960, 16 s) | 1,5 MB | Clip de la galería: alistando los cars |
-| **Total en el repo** | **15,7 MB** | Los 4 clips de la galería **no se descargan solos** (`preload="none"`): sólo al pasar el mouse o al abrirlos |
+| gal-01..gal-12.mp4 (540x960, 8-13 s) | **16,6 MB en total** | Clips de la galería: **no se descargan solos** (`preload="none"`), sólo al pasar el mouse o al abrirlos |
+| **Total en el repo** | **~26 MB** | Entrada al sitio sin cambios: sólo la portada y los 3 clips del scroll |
 
 Script: `_tiktok/encode_sitio.sh` (fuera del repo). Mantiene keyframes densos (`-g 12` a `-g 18`)
 para que el scroll avance el video con fluidez; la portada usa `crf 34` y los clips `crf 32`.
@@ -149,32 +147,34 @@ para que el scroll avance el video con fluidez; la portada usa `crf 34` y los cl
 > ruta) se muestran junto al clip del mismo índice: `clip-01` ↔ primer `film-cap`, y así.
 > Si cambias un video, cambia su descripción o el clip quedará anunciando otra ruta.
 
-### Galería: fotos y clips reales (oct-2026)
+### Galería: sólo video (oct-2026)
 
-Las 12 fotos de `assets/img/galeria/` salen del TikTok **@gocarspensilvania** (carruseles y
-fotogramas de los videos). Para reemplazar una: deja el archivo con el **mismo nombre** y
-máximo 1200 px de ancho, o cambia la ruta en el array `GALLERY`.
-Las tarjetas recortan en **3:4 desde el centro** (`object-fit:cover`): si el sujeto (el car)
-queda muy arriba o muy abajo en la foto, en la cuadrícula no se verá.
+La galería **no lleva fotos**: son 12 clips de ~12 s tomados de los videos del TikTok
+**@gocarspensilvania**. Reemplaza las fotos que había antes (el negocio las pidió quitar).
+Las fotos originales siguen respaldadas **fuera del repo**, en `_tiktok/final/`.
 
-**Los clips** son 4 piezas del mismo array, con dos campos extra:
+Cada pieza del array `GALLERY` es un clip, con el póster en `src`:
 
 ```js
-{src:'assets/videos/gal-01.jpg',      // póster (el .jpg se genera al codificar)
- alt:'Clip: la gente, los cars y las montañas',
- video:'assets/videos/gal-01.mp4',    // el clip
- dur:'18 s', wide:false},             // lo que muestra la etiqueta "Clip · 18 s"
+{src:'assets/videos/gal-01.jpg',            // póster (lo genera el script de codificación)
+ alt:'Clip: car bajando por la trocha entre los pinos',
+ video:'assets/videos/gal-01.mp4',          // el clip
+ dur:'12 s', wide:false},                   // lo que muestra la etiqueta "Clip · 12 s"
 ```
 
 - `preload="none"` + póster: **el clip no se descarga** hasta que el visitante pasa el mouse o
-  lo abre (por eso la galería puede tener varios videos sin encarecer la entrada al sitio).
+  lo abre. Los 12 clips suman 16,6 MB en el repo, pero **no pesan en la entrada al sitio**.
 - Los clips van **sin audio** (`-an`), igual que los del scroll; el visor los abre en `muted`
   para que el navegador nunca bloquee la reproducción.
-- Al cerrar el visor (✕, tocar fuera, Escape o el **botón atrás**) un `MutationObserver`
-  pausa el video: cubre todos los caminos de cierre con una sola regla.
+- Al cerrar el visor (✕, tocar fuera, Escape o el **botón atrás**) un `MutationObserver` pausa el
+  video: cubre todos los caminos de cierre con una sola regla.
+- Receta para rehacerlos: `_tiktok/encode_galeria12.sh` (fuera del repo), con la lista de ventanas
+  y de videos descartados por texto quemado.
 
-
----
+- **Ojo con el recorte de la tarjeta (3:4 desde el centro)**: los clips son 9:16, así que se
+  recortan arriba y abajo; el rótulo de TikTok del inicio queda fuera, pero conviene revisar el
+  póster de cada clip con visión antes de publicar (así se detectó un clip que salía con un muro
+  delante y otro borroso).
 
 ## 🧩 Enlaces con plan preseleccionado (sep-2026)
 
