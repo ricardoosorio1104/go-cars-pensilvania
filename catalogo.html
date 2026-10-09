@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GO CARS Pensilvania — Rutas y reservas</title>
-<meta name="description" content="Alquiler de cars 212cc 4T por las rutas turísticas de Pensilvania, Caldas. Elige tu plan, la ruta, la fecha y la hora, y reserva en línea. Casco y seguro incluidos.">
+<meta name="description" content="Alquiler de cars 212cc 4T por las rutas turísticas de Pensilvania, Caldas. Elige tu plan, la ruta y cuántos cars quieres, y envíanos la solicitud por WhatsApp. Casco y seguro incluidos.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="GO CARS Pensilvania">
 <meta property="og:title" content="GO CARS Pensilvania — Siente la montaña, vive la ruta">
@@ -61,7 +61,7 @@
     letter-spacing:.7px;font-size:10px;font-weight:600}
   .opt.on .dur{background:var(--orange);box-shadow:0 3px 10px rgba(245,96,11,.3)}
   .opt .p{font-family:'Oswald',sans-serif;font-weight:700;font-size:16px;color:var(--orange);margin-top:10px;align-self:flex-start}
-/* Segunda linea del precio (ej. Plan Fiesta: "por los 4 cars · medio dia") para que quepa en celular */
+/* Segunda linea del precio (ej. "por car · 1 persona" / "te lo cotizamos por WhatsApp") para que quepa en celular */
 .opt .p small{display:block;font-family:'Poppins',sans-serif;font-weight:400;font-size:10.5px;line-height:1.3;margin-top:3px;opacity:.78;letter-spacing:.1px}
   .hint-route{font-family:'Oswald',sans-serif;font-size:11px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:var(--coffee);margin-top:10px;align-self:flex-start;opacity:.85}
   /* Mapa del recorrido: miniatura en la tarjeta (vertical para no cortar la ruta) */
@@ -230,13 +230,17 @@
 <div class="wrap">
 
   <div class="intro">
-    Planea tu día: elige tu plan ideal, la ruta que te llame y cuántos están en tu grupo. Elige la fecha y una hora disponible, y tu salida queda agendada. 🏁
+    Planea tu día: elige tu plan ideal, la ruta que te llame y cuántos están en tu grupo. Al enviar nos llega todo por WhatsApp y ahí acordamos la fecha y la hora. 🏁
   </div>
 
   <!-- Plan -->
   <section>
     <h3 class="sec-title"><span class="n">1</span> ¿Qué te interesa?</h3>
     <div class="grid" id="plans"></div>
+
+    <h4 style="font-family:'Oswald',sans-serif;font-weight:600;text-transform:uppercase;font-size:15px;letter-spacing:.4px;color:var(--coffee);margin:24px 0 4px;">Salidas grupales · a cotizar</h4>
+    <p style="font-size:12.5px;color:rgba(30,35,39,.6);margin:0 0 12px;line-height:1.5;">Planes independientes para grupos. Se cotizan según el tamaño del grupo y la fecha.</p>
+    <div class="grid" id="planesGrupo"></div>
   </section>
 
   <!-- Ruta -->
@@ -253,33 +257,19 @@
       <div><div class="val" id="cars">1</div><div class="hint" id="carsHint">cars</div></div>
       <button id="inc" aria-label="más">+</button>
     </div>
-    <div class="hint" style="margin-top:8px">Cada car es <b>monoplaza: 1 persona por car</b>. Tenemos 4 disponibles.</div>
+    <div class="hint" style="margin-top:8px">Cada car es <b>monoplaza: 1 persona por car</b>. Tenemos 6 disponibles.</div>
   </section>
 
-  <!-- Cuándo -->
+  <!-- Datos (la fecha y la hora se acuerdan por WhatsApp) -->
   <section>
-    <h3 class="sec-title"><span class="n">4</span> ¿Cuándo y a qué hora?</h3>
-    <div class="field">
-      <label>Fecha</label>
-      <input type="date" id="fecha">
-    </div>
-    <div id="slotsWrap">
-      <div class="slot-loading">Elige una fecha para ver las horas disponibles 📅</div>
+    <h3 class="sec-title"><span class="n">4</span> Tus datos</h3>
+    <div class="field"><label>Tu nombre</label><input type="text" id="nombre" placeholder="Nombre y apellido"></div>
+    <div class="field"><label>Tu WhatsApp</label><input type="tel" id="telefono" placeholder="310 000 0000"></div>
+    <div class="hint" style="margin-top:10px;color:rgba(30,35,39,.6);font-size:12.5px">
+      Te contactamos por WhatsApp para <b>acordar la fecha y la hora</b> según la disponibilidad. 🏁
     </div>
     <div class="aviso" id="aviso"></div>
     <div class="ok-msg" id="okMsg"></div>
-    <div class="hint" style="margin-top:10px;color:rgba(30,35,39,.6);font-size:12.5px">
-      Horario: <b>7:00 a.m. – 12:30 p.m.</b> y <b>2:00 – 7:00 p.m.</b> · todos los días.<br>
-      Como hay <b>un solo guía</b>, las horas que ya tienen una ruta salen <b>ocupadas</b>
-      (incluye el descanso y la limpieza de los cars).
-    </div>
-  </section>
-
-  <!-- Datos -->
-  <section>
-    <h3 class="sec-title"><span class="n">5</span> Tus datos</h3>
-    <div class="field"><label>Tu nombre</label><input type="text" id="nombre" placeholder="Nombre y apellido"></div>
-    <div class="field"><label>Tu WhatsApp</label><input type="tel" id="telefono" placeholder="310 000 0000"></div>
   </section>
 
   <!-- Asesoría -->
@@ -302,7 +292,7 @@
       <svg viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 0 0-8.5 15.4L2 22l4.8-1.4A10 10 0 1 0 12 2Z" fill="#fff"/><path d="M8 9.5 11 13l4-4" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Reservar mi salida
     </button>
-    <div class="note">Tu reserva se <b>agenda automáticamente</b> y te confirmamos por WhatsApp. 🏁</div>
+    <div class="note">Tu solicitud llega a <b>WhatsApp</b>: ahí te damos la disponibilidad y acordamos la salida. 🏁</div>
   </div>
 </div>
 
@@ -365,7 +355,7 @@
 /* ================= CONFIG (edita aquí) ================= */
 const WHATSAPP_NUMBER = '573152205659';   // ⚠️ Tu número: 57 + sin espacios
 const API_URL = 'https://script.google.com/macros/s/AKfycbzJ7i6Rq-__fSYs51kKacG6XB20YEzaTbsUVZ5fWOkMxn35Th-sdsLYRqewOjLTSlWT7A/exec';
-const CAPACIDAD = 4;                      // cars disponibles
+const CAPACIDAD = 6;                      // cars disponibles (flota)
 const SLOTS = ['07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30',
                '11:00','11:30','12:00','12:30',
                '14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30',
@@ -373,16 +363,17 @@ const SLOTS = ['07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30',
 /* ======================================================= */
 
 const PLANS = {
-  G1:{n:'Plan Básico',          dur:'45 min',    d:'recorrido de aventura', p:85000, m:45},
-  G2:{n:'Plan Refrigerio',      dur:'60 min',    d:'refrigerio en el camino', p:110000, m:60},
-  G3:{n:'Plan Mazamorrada',     dur:'80 min',    d:'parada con mazamorra regional', p:140000, m:80},
-  G4:{n:'Plan con paradas',     dur:'2 h',       d:'degustación de productos locales y parada en miradores naturales', p:180000, m:120},
-  // Plan solo para ellas: 2 h con ancheta + refrigerio, POR CAR (no es grupal).
-  // OJO: el backend saca la duración del NOMBRE del plan (DURACION en el .gs):
-  // si este plan se renombra, hay que actualizar allá y volver a implementar.
-  G6:{n:'Plan Ellas Aventura', dur:'2 h', d:'ancheta y refrigerio en el camino', p:140000, m:120, ellas:true},
-  // El Plan Fiesta (grupal) NO es precio por car: vale por el alquiler de los 4 cars medio día.
-  G5:{n:'Plan Fiesta / Grupal', dur:'Medio día', d:'experiencia completa', p:700000, m:240, grupal:true, u:'los 4 cars · medio día'}
+  G1:{n:'Plan Básico',   dur:'40 min',     d:'recorrido por la montaña', p:50000, m:40},
+  G2:{n:'Plan Aventura', dur:'1 h 10 min', d:'más camino y más paisaje', p:85000, m:70},
+  G3:{n:'Plan Pro',      dur:'1 h 30 min', d:'refrigerio + parada de fotos', p:115000, m:90, hot:true},
+  G4:{n:'Plan Pantágora', dur:'2 h',        d:'recorrido completo + refrigerio + parada de fotos', p:155000, m:120},
+  /* SALIDAS GRUPALES — INDEPENDIENTES de los planes por car: se COTIZAN.
+     p:null + cotizar:true → el catálogo muestra "A cotizar" y NO calcula total.
+     grupo:true → se pintan en su propio bloque (id="planesGrupo"), separadas.
+     OJO: el backend saca la duración del NOMBRE del plan (DURACION en el .gs):
+     si un plan se renombra, hay que actualizar allá y volver a implementar. */
+  G6:{n:'Plan Solo Ellas',      dur:'a convenir', d:'6 cars · salida grupal · refrigerio + obsequio sorpresa', p:null, m:210, cotizar:true, grupo:true, ellas:true},
+  G5:{n:'Plan Fiesta / Grupal', dur:'3 h 30 min', d:'6 cars · salida grupal · paradas para fotos + refrigerio', p:null, m:210, cotizar:true, grupo:true}
 };
 const ROUTES = {
   r1:{n:'Pie del Cerro Morrón', d:'9.3 km · pavimento y trocha',
@@ -437,20 +428,21 @@ const $=s=>document.querySelector(s);
 const fmt=n=>'$'+n.toLocaleString('es-CO');
 
 function renderPlans(){
-  $('#plans').innerHTML='';
+  $('#plans').innerHTML=''; $('#planesGrupo').innerHTML='';
   for(const [k,v] of Object.entries(PLANS)){
     const el=document.createElement('div');
     el.className='opt'+(plan===k?' on':''); el.dataset.k=k;
     el.innerHTML=(v.ellas?`<div class="seal">Solo para ellas</div>`:'')+
-                 `<div class="dur"><b>${v.dur}</b><span>de recorrido</span></div>`+
-                 `<div class="t">${v.n}</div><div class="d">${v.d}</div><div class="p">${fmt(v.p)}${v.u?`<small>por ${v.u}</small>`:' / car'}</div>`;
+                 `<div class="dur"><b>${v.dur}</b>${/convenir/i.test(v.dur)?'':'<span>de recorrido</span>'}</div>`+
+                 `<div class="t">${v.n}</div><div class="d">${v.d}</div><div class="p">${v.cotizar?'A cotizar':fmt(v.p)}${v.cotizar?'<small>te lo cotizamos por WhatsApp</small>':(v.u?`<small>por ${v.u}</small>`:'<small>por car · 1 persona</small>')}</div>`;
     el.onclick=()=>{plan=k;aplicarPlanGrupal();renderPlans();check();refrescarDisponibilidad();};
-    $('#plans').appendChild(el);
+    // Los grupales van a su propio bloque: quedan INDEPENDIENTES de los planes por car.
+    (v.grupo ? $('#planesGrupo') : $('#plans')).appendChild(el);
   }
 }
-/* El Plan Fiesta se cobra por el alquiler COMPLETO de los 4 cars (medio día), no por car.
-   Al elegirlo se fijan los 4 cars y se bloquea el contador para que el total nunca se
-   multiplique por el número de cars. */
+/* Las SALIDAS GRUPALES ya no tienen precio por car: son "A cotizar" (p:null + cotizar:true),
+   así que el total nunca se multiplica. Se conserva el bloqueo por si algún plan vuelve
+   a marcarse con grupal:true (fijaría todos los cars de la flota). */
 function planEsGrupal(){ return !!(plan && PLANS[plan].grupal); }
 function aplicarPlanGrupal(){
   const g=planEsGrupal();
@@ -573,7 +565,7 @@ $('#advSend').onclick=()=>{
   capaCerrar('advOverlay');
   openWhatsApp(msg);
 };
-function check(){ $('#send').disabled=!(plan&&route&&hora); }
+function check(){ $('#send').disabled=!(plan&&route); }
 
 /* ==================== DISPONIBILIDAD / RESERVAS ==================== */
 let hora=null, slotsData=null;
@@ -671,6 +663,14 @@ function haceCuanto(iso){
    (bloqueadores de scripts, navegador dentro de otra app, datos móviles inestables),
    NO dejamos la reserva trabada. Mostramos el horario completo y el cupo se confirma
    por WhatsApp al instante. */
+/* ---------------------------------------------------------------------------
+   ⚠️ CÓDIGO DORMIDO — consulta de disponibilidad en vivo.
+   El catálogo YA NO usa agenda automática: el cliente arma su solicitud y la
+   manda por WhatsApp; la disponibilidad se responde a mano desde el negocio.
+   Estas funciones (horarioSinConexion, renderSlots, loadSlots) quedaron sin uso
+   por si algún día se reconecta la agenda. OJO: dependen de #fecha y #slotsWrap,
+   que ya no existen en el HTML — renderSlots sale antes con una guarda.
+   --------------------------------------------------------------------------- */
 function horarioSinConexion(){
   return {ok:true, sinConexion:true, capacidad:CAPACIDAD,
           slots:SLOTS.map(function(h){ return {hora:h, estado:'porconfirmar', libres:CAPACIDAD, ruta:''}; })};
@@ -678,6 +678,7 @@ function horarioSinConexion(){
 
 function renderSlots(){
   const wrap=$('#slotsWrap');
+  if(!wrap) return;          // la sección de fecha/hora ya no existe en el catálogo
   if(!API_URL){
     wrap.innerHTML='<div class="slot-loading">Escríbenos por WhatsApp y te confirmamos la hora disponible. 📲</div>';
     return;
@@ -757,9 +758,9 @@ function loadSlots(intento){
 }
 /** Recalcula las horas cuando cambia el plan o la ruta (cambia la duración / el guía) */
 function refrescarDisponibilidad(){
-  if($('#fecha').value && API_URL) loadSlots(0);
+  /* La agenda es MANUAL: no consultamos disponibilidad en vivo.
+     El cliente envía su solicitud y el negocio responde por WhatsApp. */
 }
-$('#fecha').addEventListener('change', function(){ loadSlots(0); });
 
 // Stepper
 $('#inc').onclick=()=>{if(planEsGrupal())return;if(cars<CAPACIDAD){cars++;$('#cars').textContent=cars;}};
@@ -769,88 +770,27 @@ function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show'
 
 $('#send').onclick=()=>{
   if(!plan||!route){toast('Elige plan y ruta primero');return;}
-  if(!hora){toast('Elige una hora disponible');return;}
   const p=PLANS[plan];
-  const fecha=$('#fecha').value;
   const nombre=$('#nombre').value.trim(), tel=$('#telefono').value.trim();
-  // El Plan Fiesta (grupal) vale por el alquiler de los 4 cars: NO se multiplica por cars.
-  const total = p.grupal ? p.p : p.p*cars;
+  // Las salidas grupales (A cotizar) no tienen precio fijo: se cotizan por WhatsApp.
+  const total = p.cotizar ? null : p.p*cars;
+  // "a convenir" (Plan Solo Ellas) se lee mejor como frase que como duración suelta.
+  const durTxt = /convenir/i.test(p.dur) ? 'duración a convenir' : p.dur+' de recorrido';
 
+  /* La agenda es MANUAL: aquí NO se elige fecha ni hora. El mensaje llega al WhatsApp
+     del negocio (+57 315 220 5659) y desde ahí se responde con la disponibilidad. */
   const msg=
-`🏁 *Reserva — GO CARS Pensilvania*\n\n`+
-`*Plan:* ${p.n} · ${p.dur} de recorrido (${p.d})\n`+
+`🏁 *Solicitud — GO CARS Pensilvania*\n\n`+
+`*Plan:* ${p.n} · ${durTxt} (${p.d})\n`+
 `*Ruta:* ${ROUTES[route].n}\n`+
-(p.grupal?`*Cars:* los ${cars} (incluidos en el plan)\n`:`*Cars (1 persona por car):* ${cars}\n`)+
-`*Fecha:* ${fecha}\n`+
-`*Hora:* ${fmt12(hora)}\n`+
-`*Total:* ${fmt(total)}${(cars>1&&!p.grupal)?` (${fmt(p.p)} × ${cars})`:''}\n\n`+
+`*Cars (1 persona por car):* ${cars}\n`+
+`*Total:* ${p.cotizar?'A cotizar con ustedes':fmt(total)+(cars>1?` (${fmt(p.p)} × ${cars})`:'')}\n\n`+
+`¿Qué fechas y horas tienen disponibles?\n\n`+
 `👤 *${nombre||'—'}* · ${tel||'—'}`;
 
   ocultarMensajes();
-
-  // Sin disponibilidad en vivo desde este navegador: la solicitud se envía por WhatsApp
-  // (el backend no se puede alcanzar, así que no intentamos agendar a ciegas).
-  if(slotsData && (slotsData.sinConexion || slotsData.estatica)){
-    const nota = slotsData.estatica
-      ? '_📋 Usé la disponibilidad guardada de la agenda. ¿Me confirman si esa hora sigue libre?_'
-      : '_⚠️ No pude verificar la disponibilidad en vivo desde este navegador: ¿me confirman si esa hora está libre?_';
-    openWhatsApp(msg+'\n\n'+nota);
-    toast('¡Listo! Envía el mensaje y te confirmamos la hora 💬');
-    return;
-  }
-
-  // Sin backend configurado: solo WhatsApp
-  if(!API_URL){
-    openWhatsApp(msg);
-    toast('¡Listo! Envía el mensaje por WhatsApp 💬');
-    return;
-  }
-
-  // Con backend: guarda en la agenda + base de datos y verifica el cupo
-  const btn=$('#send'), textoBtn=btn.innerHTML;
-  const horaReserva=hora, carsReserva=cars;
-  const textoWa = msg+'\n\n_Reserva agendada ✅_';
-  // Pre-abrimos la pestaña AQUÍ, dentro del toque del usuario: si se abre después de
-  // esperar al servidor, los navegadores MÓVILES la bloquean (bug en celulares).
-  let waWin=null;
-  try{ waWin=window.open('about:blank','_blank'); }catch(e){ waWin=null; }
-  btn.disabled=true; btn.textContent='Guardando reserva…';
-
-  pedir({action:'reservar', fecha:fecha, hora:horaReserva, plan:p.n, ruta:ROUTES[route].n,
-         cars:carsReserva, total:fmt(total), nombre:nombre, telefono:tel}, function(data){
-    btn.innerHTML=textoBtn;
-    if(data && data.ok){
-      loadSlots();
-      const abrio = irAWhatsApp(textoWa, waWin);
-      $('#okMsg').innerHTML='✅ <b>¡Reserva confirmada!</b><br>'+
-        fecha+' · '+fmt12(horaReserva)+' · '+carsReserva+' car'+(carsReserva>1?'s':'')+'<br>'+
-        ROUTES[route].n+
-        '<br><span style="font-size:12px">Tu salida quedó agendada en el calendario y la base de datos del negocio. 🏁</span>'+
-        '<div style="margin-top:10px;font-size:12px">'+
-          (abrio?'Se abrió WhatsApp con tu confirmación. Si no la ves, toca el botón:'
-                :'Toca el botón para enviar tu confirmación por WhatsApp:')+
-        '</div>'+
-        // Enlace REAL (no JavaScript): funciona incluso dentro del navegador de WhatsApp
-        '<a class="retry-btn" href="'+waUrl(textoWa)+'" target="_blank" rel="noopener"'+
-        ' style="display:inline-block;text-decoration:none">📲 Enviar por WhatsApp</a>';
-      $('#okMsg').classList.add('show');
-      toast('¡Reserva guardada en la agenda! 📅');
-    } else if(data && (data.motivo==='ocupado' || data.motivo==='otra-ruta' || data.motivo==='guia-ocupado')){
-      if(waWin && !waWin.closed){ try{ waWin.close(); }catch(e){} }
-      loadSlots();
-      const titulo = (data.motivo==='otra-ruta') ? 'Ya hay otra ruta a esa hora' : 'Esa hora ya está ocupada';
-      $('#aviso').innerHTML='⚠️ <b>'+titulo+'.</b><br>'+(data.mensaje||'Elige otra hora, por favor.');
-      $('#aviso').classList.add('show');
-      toast(titulo);
-    } else {
-      if(waWin && !waWin.closed){ try{ waWin.close(); }catch(e){} }
-      $('#aviso').innerHTML='⚠️ No pudimos guardar la reserva'+(data&&data.error?(' ('+data.error+')'):'')+
-        '. Escríbenos por WhatsApp para confirmarla. 📲';
-      $('#aviso').classList.add('show');
-      openWhatsApp(msg);
-      check();
-    }
-  });
+  openWhatsApp(msg);
+  toast('¡Listo! Envía el mensaje y te damos disponibilidad 💬');
 };
 
 /* Si llegas desde la sección "Planes y precios" del sitio, el plan viene elegido.
@@ -864,7 +804,7 @@ $('#send').onclick=()=>{
   }catch(e){}
 })();
 
-// Si el plan llegó preseleccionado por la URL (?plan=G5), fijamos los 4 cars del plan grupal
+// Si el plan llegó preseleccionado por la URL (?plan=G5), aplicamos su regla de cars
 aplicarPlanGrupal();
 renderPlans();renderRoutes();check();
 
@@ -873,9 +813,7 @@ if(plan){
   setTimeout(function(){ toast('Plan elegido: ' + PLANS[plan].n + ' · ahora elige tu ruta'); }, 600);
 }
 
-// default fecha = hoy
-const d=new Date();$('#fecha').value=d.toISOString().slice(0,10);
-loadSlots();
+/* Sin agenda automática: el catálogo solo arma la solicitud y la manda a WhatsApp. */
 </script>
 
 </body>
