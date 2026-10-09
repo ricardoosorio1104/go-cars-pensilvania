@@ -38,7 +38,8 @@ sitio-web/
 ├── servir.py               ← servidor local con soporte Range (para previsualizar los videos)
 ├── README.md               ← este archivo
 └── assets/
-    ├── videos/             ← 3 clips de la ruta a la vereda La Cabaña (vertical 720x1280, sin audio)
+    ├── videos/             ← portada + 3 clips de las rutas (vertical 9:16, sin audio)
+    │                          rodada-trocha.mp4 (portada) · clip-01/02/03.mp4
     ├── img/                ← fotos, mapas de ruta y logo
     └── fonts/              ← Oswald, Poppins, Caveat (locales: el sitio no depende de Google Fonts)
 ```
@@ -53,7 +54,7 @@ sitio-web/
 | Rutas | Las 9 rutas con mapa satelital; al tocar una se abre su ficha completa (experiencia, «Qué incluye» y «Opcional») |
 | Planes | Los 5 planes con precios por car |
 | Catálogo digital | Mockup de navegador con el catálogo embebido + botón para abrirlo |
-| Galería | 12 imágenes con visor (lightbox) |
+| Galería | 12 **fotos reales** de las rutas (tomadas del TikTok @gocarspensilvania) con visor (lightbox) |
 | Contacto | WhatsApp **315 220 5659**, WhatsApp **320 738 4581**, correo **gocarspensilvania@gmail.com** · dirección: **Calle 5 # 4-42, Pensilvania, Caldas** · redes: **TikTok @gocarspensilvania** y **fanpage de Facebook: https://www.facebook.com/profile.php?id=61593590381138** |
 
 ## Cómo editar el contenido
@@ -128,17 +129,30 @@ Se retiró del sitio (la imagen de WhatsApp apuntaba ahí, el puente `/api/exec`
 ocultaba su insignia) y se borraron `_headers`, `_redirects` y `.netlify/`.
 El sitio oficial es **https://gocarspensilvania.com**. No intentar `netlify-cli deploy` otra vez.
 
-### Peso de los videos (optimizados sep-2026)
+### Peso de los videos (contenido real del TikTok, oct-2026)
 
 | Archivo | Tamaño | Uso |
 |---|---|---|
-| ruta-cabana-2.mp4 (640x1138) | 2,9 MB | Portada (carga al entrar) |
-| ruta-cabana-3.mp4 (540x960) | 3,6 MB | Clip del film (carga diferida) |
-| ruta-cabana-1.mp4 (540x960) | 6,3 MB | Clip del film (carga diferida) |
-| **Total** | **12,8 MB** | (antes 26,8 MB) |
+| rodada-trocha.mp4 (640x1138, 13 s) | 3,1 MB | Portada (carga al entrar) |
+| clip-01.mp4 (540x960, 22 s) | 3,1 MB | Clip del film · sendero entre pinos (Ruta 2) |
+| clip-02.mp4 (540x960, 24 s) | 2,7 MB | Clip del film · camino de tierra |
+| clip-03.mp4 (540x960, 20 s) | 1,9 MB | Clip del film · el valle y el refrigerio |
+| **Total** | **10,8 MB** | (antes 12,8 MB) |
 
-Scripts de re-codificación: `_optimizar.sh` (primera pasada) y `_optimizar2.sh` (segunda, la aplicada).
-Mantienen keyframes densos (`-g 12` a `-g 18`) para que el scroll avance el video con fluidez.
+Script: `_tiktok/encode_sitio.sh` (fuera del repo). Mantiene keyframes densos (`-g 12` a `-g 18`)
+para que el scroll avance el video con fluidez; la portada usa `crf 34` y los clips `crf 32`.
+
+> ⚠️ **El orden de los clips manda el texto.** En `index.html`, los `film-cap` (título, frase y
+> ruta) se muestran junto al clip del mismo índice: `clip-01` ↔ primer `film-cap`, y así.
+> Si cambias un video, cambia su descripción o el clip quedará anunciando otra ruta.
+
+### Galería: fotos reales (oct-2026)
+
+Las 12 fotos de `assets/img/galeria/` salen del TikTok **@gocarspensilvania** (carruseles y
+fotogramas de los videos). Para reemplazar una: deja el archivo con el **mismo nombre** y
+máximo 1200 px de ancho, o cambia la ruta en el array `GALLERY`.
+Las tarjetas recortan en **3:4 desde el centro** (`object-fit:cover`): si el sujeto (el car)
+queda muy arriba o muy abajo en la foto, en la cuadrícula no se verá.
 
 
 ---
