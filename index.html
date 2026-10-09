@@ -254,6 +254,28 @@ a.plan:hover .p-go i,a.plan:focus-visible .p-go i{transform:translateX(5px)}
 .gal-grid button img{width:100%;height:100%;object-fit:cover;transition:transform .6s, filter .4s}
 .gal-grid button:hover img{transform:scale(1.07)}
 .gal-grid button.wide{grid-column:span 2;aspect-ratio:3/2}
+/* ===================== REGISTRO DE CUPOS ===================== */
+.reg-form{background:var(--white);border:1px solid var(--line);border-radius:24px;padding:clamp(20px,3vw,32px);box-shadow:var(--shadow);max-width:1000px}
+.reg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px 16px}
+.reg-field{display:flex;flex-direction:column;gap:6px}
+.reg-field label{font-family:'Oswald Local','Oswald',sans-serif;text-transform:uppercase;letter-spacing:.08em;font-size:11.5px;font-weight:600;color:var(--green)}
+.reg-field input,.reg-field select{font-family:inherit;font-size:15px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--cream);color:var(--charcoal);width:100%;min-height:44px}
+.reg-field input:focus,.reg-field select:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(245,96,11,.16)}
+.reg-field input[readonly]{background:rgba(20,68,46,.07);color:var(--green);font-family:'Oswald Local','Oswald',sans-serif;font-weight:600;letter-spacing:.02em}
+.reg-field input:invalid:not(:placeholder-shown),.reg-field select:invalid{color:var(--charcoal)}
+.reg-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
+.reg-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:22px}
+.reg-note{font-size:13.5px;color:rgba(30,35,39,.65);max-width:34ch;line-height:1.45}
+.reg-note b{color:var(--green)}
+.reg-msg{margin-top:14px;font-size:15px;line-height:1.55;display:none}
+.reg-msg.on{display:block}
+.reg-msg.ok{color:var(--green-soft)}
+.reg-msg.err{color:#A8430A}
+.reg-msg a{color:var(--orange);text-decoration:underline}
+.reg-acceso{margin-top:16px;font-size:13px;color:rgba(30,35,39,.55)}
+.reg-acceso a{color:var(--green-soft)}
+@media(max-width:640px){.reg-actions{align-items:stretch}.reg-actions .btn{width:100%}}
+
 .gal-grid button.tall{grid-row:span 2;aspect-ratio:3/4}
 .gal-grid button{position:relative}
 .gal-grid button video{width:100%;height:100%;object-fit:cover;display:block}
@@ -429,6 +451,7 @@ footer ul{list-style:none;display:grid;gap:9px}
       <a href="#rutas">Rutas</a>
       <a href="#planes">Planes</a>
       <a href="#catalogo">Catálogo</a>
+      <a href="#registro">Registro</a>
       <a href="#galeria">Galería</a>
       <a href="#contacto">Contacto</a>
     </nav>
@@ -617,6 +640,68 @@ footer ul{list-style:none;display:grid;gap:9px}
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ================= REGISTRO DE CUPOS ================= -->
+<section class="sec reg" id="registro">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker">Registro de cupos</div>
+      <h2 class="h2">Registra tu cupo</h2>
+      <p class="lead">Déjanos los datos de tu recorrido y te confirmamos por WhatsApp. Quedan en la base privada del negocio: nadie más la ve, y solo se usan para tu salida y el seguro.</p>
+    </div>
+
+    <form class="reg-form rv" id="regForm" novalidate>
+      <div class="reg-grid">
+        <div class="reg-field"><label for="rg_nombre">Nombre completo</label>
+          <input id="rg_nombre" name="nombre" type="text" required autocomplete="name" placeholder="Nombre y apellido"></div>
+        <div class="reg-field"><label for="rg_ident">Identificación</label>
+          <input id="rg_ident" name="identificacion" type="text" required inputmode="numeric" placeholder="Cédula"></div>
+
+        <div class="reg-field"><label for="rg_cel">Celular</label>
+          <input id="rg_cel" name="celular" type="tel" required autocomplete="tel" placeholder="310 000 0000"></div>
+        <div class="reg-field"><label for="rg_correo">Correo</label>
+          <input id="rg_correo" name="correo" type="email" required autocomplete="email" placeholder="tucorreo@ejemplo.com"></div>
+
+        <div class="reg-field"><label for="rg_eps">EPS</label>
+          <input id="rg_eps" name="eps" type="text" required placeholder="Para el seguro del recorrido"></div>
+        <div class="reg-field"><label for="rg_edad">Edad</label>
+          <input id="rg_edad" name="edad" type="number" required min="1" max="120" inputmode="numeric" placeholder="Años"></div>
+
+        <div class="reg-field"><label for="rg_plan">Plan</label>
+          <select id="rg_plan" name="plan" required></select></div>
+        <div class="reg-field"><label for="rg_ruta">Ruta</label>
+          <select id="rg_ruta" name="ruta" required></select></div>
+
+        <div class="reg-field"><label for="rg_valor">Valor del plan</label>
+          <input id="rg_valor" name="valor" type="text" readonly tabindex="-1" placeholder="Se calcula solo"></div>
+        <div class="reg-field"><label for="rg_cars">Cars (1 persona por car)</label>
+          <select id="rg_cars" name="cars" required></select></div>
+
+        <div class="reg-field"><label for="rg_fecha">Fecha del recorrido</label>
+          <input id="rg_fecha" name="fecha" type="date" required></div>
+        <div class="reg-field"><label for="rg_hora">Hora</label>
+          <select id="rg_hora" name="hora" required></select></div>
+
+        <div class="reg-field"><label for="rg_seguro">Seguro de recorrido</label>
+          <select id="rg_seguro" name="seguro">
+            <option value="Sí">Sí, incluido</option>
+            <option value="No">No</option>
+          </select></div>
+      </div>
+
+      <!-- campo invisible: si alguien lo llena, es un robot (no se guarda) -->
+      <input id="rg_web" name="web" type="text" class="reg-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <div class="reg-actions">
+        <button type="submit" class="btn btn-orange" id="rgEnviar">Enviar mis datos</button>
+        <span class="reg-note">El estado entra como <b>Por confirmar</b>. Te avisamos por WhatsApp cuando quede listo.</span>
+      </div>
+      <div class="reg-msg" id="regMsg" role="status" aria-live="polite"></div>
+    </form>
+
+    <p class="reg-acceso" id="regAcceso" hidden>Acceso del negocio: <a id="regAccesoLink" href="#" target="_blank" rel="noopener">abrir la base de datos de cupos</a></p>
   </div>
 </section>
 
@@ -1237,5 +1322,159 @@ window.addEventListener('load', ()=>{ heroVideo.pause(); vids.forEach(v=>v.pause
 }
 </script>
 
+<!-- ============ REGISTRO DE CUPOS: envío a la base privada ============
+     El sitio SOLO escribe: manda los datos al Apps Script del negocio, que los guarda
+     en la hoja privada del Drive. Aquí no se guarda nada y no se puede leer la base. -->
+<script>
+(function(){
+  const REG_API = 'https://script.google.com/macros/s/AKfycbzJ7i6Rq-__fSYs51kKacG6XB20YEzaTbsUVZ5fWOkMxn35Th-sdsLYRqewOjLTSlWT7A/exec';
+  /* Para el botón "Acceso del negocio": pega aquí la URL de la hoja de cálculo
+     (la copias del navegador cuando la abras con la cuenta del negocio). Mientras
+     esté vacío, ese enlace no aparece. */
+  const REG_HOJA = '';
+  const REG_WA   = '573152205659';
+  const HORAS = ['07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30',
+                 '11:00','11:30','12:00','12:30',
+                 '14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30',
+                 '18:00','18:30','19:00'];
+
+  const form = document.getElementById('regForm');
+  if (!form) return;
+  const q = s => form.querySelector(s);
+  const fmtH = h => { const x = h.split(':'), H = parseInt(x[0],10), ap = H < 12 ? 'a.m.' : 'p.m.';
+                      return ((H % 12) === 0 ? 12 : (H % 12)) + ':' + x[1] + ' ' + ap; };
+  const pesos = v => '$' + Number(v).toLocaleString('es-CO').replace(/,/g, '.');
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  /* ---- Opciones de los selectores (salen de los mismos datos del sitio) ---- */
+  (function llenar(){
+    const planes = (typeof PLANS !== 'undefined') ? PLANS : [];
+    q('#rg_plan').innerHTML = '<option value="">Elige tu plan…</option>' +
+      planes.map(p => '<option value="' + esc(p.n) + '">' + esc(p.n) + ' · ' + esc(p.t) +
+        (p.p ? ' · ' + pesos(p.p) + ' por car' : ' · a cotizar') + '</option>').join('');
+    const rutas = (typeof ROUTES !== 'undefined') ? ROUTES : [];
+    q('#rg_ruta').innerHTML = '<option value="">Elige tu ruta…</option>' +
+      rutas.map(r => '<option value="' + esc(r.n) + '">' + esc(r.n) + '</option>').join('');
+    q('#rg_cars').innerHTML = [1,2,3,4,5,6].map(n => '<option value="' + n + '">' + n +
+      (n === 1 ? ' car (1 persona)' : ' cars (' + n + ' personas)') + '</option>').join('');
+    q('#rg_hora').innerHTML = '<option value="">Elige la hora…</option>' +
+      HORAS.map(h => '<option value="' + h + '">' + fmtH(h) + '</option>').join('');
+    const hoy = new Date(); const iso = new Date(hoy.getTime() - hoy.getTimezoneOffset()*60000).toISOString().slice(0,10);
+    q('#rg_fecha').min = iso;
+    valor();
+  })();
+
+  /* ---- El valor del plan se calcula solo (precio por car × cars) ---- */
+  function valor(){
+    const planes = (typeof PLANS !== 'undefined') ? PLANS : [];
+    const p = planes.filter(x => x.n === q('#rg_plan').value)[0];
+    const cars = parseInt(q('#rg_cars').value, 10) || 1;
+    q('#rg_valor').value = !p ? '' : (p.p == null ? 'Cotizar' : pesos(p.p * cars));
+  }
+  q('#rg_plan').addEventListener('change', valor);
+  q('#rg_cars').addEventListener('change', valor);
+
+  /* ---- Mensajes ---- */
+  const msg = q('#regMsg');
+  function decir(txt, tipo){ msg.className = 'reg-msg on ' + tipo; msg.innerHTML = txt; }
+
+  /* ---- Envío: POST → respaldo por script (JSONP) → si nada funciona, WhatsApp ---- */
+  function enviar(datos, ok, fallo){
+    let listo = false;
+    const termina = (d, bien) => { if (listo) return; listo = true; bien ? ok(d) : fallo(d); };
+    try{
+      fetch(REG_API, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
+                       body: JSON.stringify(datos), redirect:'follow' })
+        .then(r => r.text())
+        .then(txt => { let d = null; try{ d = JSON.parse(txt); }catch(e){ d = null; }
+                       if (d && d.ok) termina(d, true); else termina(d, false); })
+        .catch(() => porScript());
+    }catch(e){ porScript(); }
+
+    function porScript(){
+      if (listo) return;
+      const qs = Object.keys(datos).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(datos[k])).join('&');
+      const nom = 'regcb' + Date.now();
+      const s = document.createElement('script');
+      const limpiar = () => { try{ delete window[nom]; }catch(e){ window[nom] = undefined; }
+                              if (s.parentNode) s.parentNode.removeChild(s); };
+      window[nom] = function(d){ limpiar(); termina(d, !!(d && d.ok)); };
+      s.onerror = function(){ limpiar(); termina(null, false); };
+      s.src = REG_API + '?' + qs + '&callback=' + nom;
+      document.body.appendChild(s);
+      setTimeout(function(){ if (!listo){ limpiar(); termina(null, false); } }, 9000);
+    }
+  }
+
+  function textoWA(d){
+    return 'REGISTRO DE CUPO — GO CARS%0A%0A' +
+      'Nombre: ' + encodeURIComponent(d.nombre) + '%0A' +
+      'Identificación: ' + encodeURIComponent(d.identificacion) + '%0A' +
+      'Celular: ' + encodeURIComponent(d.celular) + '%0A' +
+      'Correo: ' + encodeURIComponent(d.correo) + '%0A' +
+      'EPS: ' + encodeURIComponent(d.eps) + '%0A' +
+      'Edad: ' + encodeURIComponent(d.edad) + '%0A' +
+      'Plan: ' + encodeURIComponent(d.plan) + '%0A' +
+      'Ruta: ' + encodeURIComponent(d.ruta) + '%0A' +
+      'Cars: ' + d.cars + '%0A' +
+      'Valor: ' + encodeURIComponent(q('#rg_valor').value || 'Cotizar') + '%0A' +
+      'Fecha: ' + encodeURIComponent(d.fecha) + '%0A' +
+      'Hora: ' + encodeURIComponent(d.hora) + '%0A' +
+      'Seguro de recorrido: ' + encodeURIComponent(d.seguro);
+  }
+
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    if (q('#rg_web').value) return;                 /* robot: se ignora en silencio */
+    if (!form.checkValidity()){ form.reportValidity(); return; }
+
+    /* ⚠️ 'action' es obligatorio en las DOS vías (POST y respaldo por script): 
+       sin él, el backend interpreta la llamada como consulta de horarios, responde ok:true 
+       y el cliente ve "recibimos tus datos" aunque NO se haya guardado nada. */
+    const d = {
+      action: 'registrar',
+      nombre: q('#rg_nombre').value.trim(),
+      identificacion: q('#rg_ident').value.trim(),
+      celular: q('#rg_cel').value.trim(),
+      correo: q('#rg_correo').value.trim(),
+      eps: q('#rg_eps').value.trim(),
+      edad: q('#rg_edad').value,
+      plan: q('#rg_plan').value,
+      ruta: q('#rg_ruta').value,
+      cars: q('#rg_cars').value,
+      total: q('#rg_valor').value,
+      fecha: q('#rg_fecha').value,
+      hora: q('#rg_hora').value,
+      seguro: q('#rg_seguro').value
+    };
+
+    const btn = q('#rgEnviar');
+    btn.disabled = true; btn.textContent = 'Enviando…';
+    decir('Estamos guardando tus datos…', 'ok');
+
+    const wa = 'https://wa.me/' + REG_WA + '?text=' + textoWA(d);
+
+    enviar(d, function(r){
+      btn.disabled = false; btn.textContent = 'Enviar mis datos';
+      form.reset(); valor();
+      decir('<b>Listo, recibimos tus datos.</b> Quedaron como <b>Por confirmar</b>: te escribimos por WhatsApp al ' +
+            esc(d.celular) + ' para confirmar la salida.' + (r && r.aviso ? '<br>' + esc(r.aviso) : '') +
+            '<br><a href="' + wa + '" target="_blank" rel="noopener">Abrir WhatsApp y adelantar la confirmación</a>', 'ok');
+    }, function(){
+      btn.disabled = false; btn.textContent = 'Enviar mis datos';
+      decir('No pudimos guardar los datos ahora mismo. ' +
+            '<a href="' + wa + '" target="_blank" rel="noopener"><b>Envíanos el registro por WhatsApp</b></a> ' +
+            'y queda igual.', 'err');
+    });
+  });
+
+  /* ---- Enlace de acceso del negocio (solo si hay URL) ---- */
+  if (REG_HOJA){
+    const p = document.getElementById('regAcceso');
+    document.getElementById('regAccesoLink').href = REG_HOJA;
+    p.hidden = false;
+  }
+})();
+</script>
 </body>
 </html>
