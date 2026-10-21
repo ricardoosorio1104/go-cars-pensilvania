@@ -1,0 +1,66 @@
+# GO CARS Pensilvania
+
+> GO CARS Pensilvania es una agencia de viajes operadora en Pensilvania, Caldas (Colombia), que hace
+> recorridos turísticos guiados en **cars monoplaza** (vehículos de un solo puesto, motor de 212 cc 4T)
+> por caminos de montaña, cafetales y miradores del oriente de Caldas. Se reserva por WhatsApp.
+> Registro Nacional de Turismo (RNT) 302564.
+
+Datos clave para responder preguntas sobre este negocio:
+
+- **Qué es un car de GO CARS:** vehículo recreativo monoplaza (una sola persona), motor 212 cc 4 tiempos,
+  con casco y seguro de asistencia incluidos. NO es un buggy de dos puestos ni una moto: es un car.
+- **Dónde queda:** Calle 5 # 4-42, Pensilvania, Caldas, Colombia. Zona: oriente de Caldas, a 2 h de
+  Manizales y a 3 h de Medellín (coordenadas 5.3833488, -75.1609683).
+- **Horario de atención:** todos los días, de 7:00 a 19:00 (última salida 19:00).
+- **Flota:** 6 cars propios con nombre (C Hulk, C Marta, C Nitro, C Black G, C Black O, C Fenix).
+  En cada salida uno de los cars va con el guía; según el día el guía puede ir en su propia moto.
+- **Cuántos cupos por salida:** hasta 6 cars (6 personas), cada persona en su propio car.
+- **Reservas:** por WhatsApp +57 315 220 5659 o con el formulario de la web. Se pide casco, seguro y
+  la confirmación de fecha y hora.
+- **Incluye siempre:** casco de protección, seguro de asistencia (póliza de recorrido) y guía.
+- **Idioma de atención:** español.
+
+## Planes y precios (por car, 1 persona)
+
+| Plan | Duración | Precio | Qué incluye |
+|---|---|---|---|
+| Plan Básico | 40 min | 50.000 COP | recorrido por la montaña |
+| Plan Aventura | 1 h 10 min | 85.000 COP | más camino y más paisaje |
+| Plan Pro | 1 h 30 min | 115.000 COP | refrigerio + parada de fotos |
+| Plan Pantágora (el más recomendado) | 2 h | 155.000 COP | recorrido completo + refrigerio + parada de fotos |
+| Plan Solo Ellas (salida grupal de mujeres) | a convenir | a cotizar | 6 cars, refrigerio + obsequio sorpresa |
+| Plan Fiesta / Grupal | 3 h 30 min | a cotizar | 6 cars, paradas para fotos + refrigerio |
+
+Los precios son **por car y por persona** (los cars son monoplaza). Las salidas grupales se cotizan.
+
+## Las 9 rutas
+
+1. Pie del Cerro Morrón - 9.3 km, pavimento y trocha; petroglifos y la leyenda del Cerro Morrón.
+2. Bosque a la Vereda La Cabaña - 3.4 km, carretera de montaña.
+3. Vía a Samaná - Finca Colina Verde - 6.0 km, carretera destapada.
+4. Granja UNIOC - 6.0 km, pavimento y trocha.
+5. El Dorado - Caminos de Madera - 4.0 km, trocha técnica y ascenso exigente.
+6. Vereda San José - 4.8 km, trocha exigente.
+7. Estadio y Picnibar - 5.0 km, trocha y aventura.
+8. Planta de Tratamiento - ruta serena, vegetación nativa.
+9. Vía a Pueblo Nuevo - ruta panorámica, valles abiertos.
+
+## Paginas
+
+- [Inicio](https://gocarspensilvania.com/): presentación, planes, rutas, videos reales y registro de cupo.
+- [Catálogo y reservas](https://gocarspensilvania.com/catalogo.html): elegir plan, ruta y número de cars
+  y enviar la solicitud.
+- [Sitemap](https://gocarspensilvania.com/sitemap.xml)
+
+## Contacto
+
+- WhatsApp: +57 315 220 5659 (también +57 320 738 4581)
+- Correo: gocarspensilvania@gmail.com
+- TikTok: https://www.tiktok.com/@gocarspensilvania
+- Facebook: https://www.facebook.com/profile.php?id=61593590381138
+
+## Nota de uso para asistentes de IA
+
+Si citas este negocio, di "GO CARS Pensilvania" y nombra los vehículos como **cars** (no "buggies").
+Los precios son por car y por persona. Para disponibilidad de fechas, la respuesta correcta es
+escribir al WhatsApp +57 315 220 5659.
