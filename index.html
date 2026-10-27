@@ -466,6 +466,40 @@ footer ul{list-style:none;display:grid;gap:9px}
 @media(max-width:640px){.faq-grid{grid-template-columns:1fr}}
 /* texto solo para lectores de pantalla y buscadores (no se ve) */
 .vh{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ============ ALIANZAS ============ */
+.alianzas{background:var(--cream)}
+.esc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
+.esc{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:22px}
+.esc-h{display:inline-block;font-family:'Oswald Local','Oswald',sans-serif;text-transform:uppercase;
+  letter-spacing:.12em;font-size:11.5px;font-weight:600;color:var(--cream);background:var(--green);
+  border-radius:999px;padding:6px 14px;line-height:1}
+.esc b{display:block;font-family:'Oswald Local','Oswald',sans-serif;text-transform:uppercase;font-size:15px;
+  color:var(--green);margin-top:12px;letter-spacing:.03em}
+.esc p{font-size:13.6px;opacity:.85;margin-top:6px;line-height:1.6}
+.ali-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch}
+.aliado{background:var(--white);border:1px solid var(--line);border-radius:22px;overflow:hidden;
+  display:flex;flex-direction:column}
+.aliado-head{background:#FFFFFF;display:grid;place-items:center;padding:22px;border-bottom:1px solid var(--line)}
+.aliado-head img{width:100%;max-width:330px;height:auto;display:block}
+.aliado-body{padding:22px;display:flex;flex-direction:column;flex:1}
+.aliado-kick{font-family:'Oswald Local','Oswald',sans-serif;text-transform:uppercase;letter-spacing:.14em;
+  font-size:11px;color:var(--orange);font-weight:600}
+.aliado-body h3{font-family:'Oswald Local','Oswald',sans-serif;text-transform:uppercase;font-size:21px;
+  color:var(--green);margin-top:6px;letter-spacing:.02em}
+.aliado-body p{font-size:14px;opacity:.88;margin-top:9px;line-height:1.65}
+.aliado-nota{font-size:12.6px;color:var(--coffee);opacity:.85;font-style:italic;margin-top:14px;
+  border-top:1px dashed rgba(92,58,33,.3);padding-top:12px}
+.aliado-video{margin-top:auto;padding-top:16px}
+.aliado-video video{display:block;width:100%;max-height:430px;border-radius:16px;background:#0b1512;
+  box-shadow:0 18px 44px rgba(30,35,39,.18)}
+.ali-cta{display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+  background:var(--green);color:var(--cream);border-radius:22px;padding:26px 28px;margin-top:34px}
+.ali-cta h3{font-family:'Oswald Local','Oswald',sans-serif;text-transform:uppercase;font-size:20px;
+  color:var(--cream);letter-spacing:.03em}
+.ali-cta p{font-size:13.8px;color:rgba(244,238,227,.86);max-width:62ch;margin-top:7px;line-height:1.65}
+@media(max-width:900px){.ali-grid{grid-template-columns:1fr}.esc-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -484,6 +518,7 @@ footer ul{list-style:none;display:grid;gap:9px}
       <a href="#catalogo">Catálogo</a>
       <a href="#registro">Registro</a>
       <a href="#galeria">Galería</a>
+      <a href="#alianzas">Alianzas</a>
       <a href="#contacto">Contacto</a>
     </nav>
     <a class="btn btn-orange nav-cta" data-wa="1" href="#">Reservar</a>
@@ -749,6 +784,80 @@ footer ul{list-style:none;display:grid;gap:9px}
 </section>
 
 
+
+<!-- ================= ALIANZAS ================= -->
+<section class="sec alianzas" id="alianzas">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker">Alianzas</div>
+      <h2 class="h2">Alianzas de aventura</h2>
+      <p class="lead">Nos unimos a otros operadores turísticos del oriente de Caldas para que el plan
+        no se quede corto: una hora de aventura o una jornada completa, todo coordinado en una sola
+        conversación y con guías de la región.</p>
+    </div>
+
+    <div class="esc-grid rv">
+      <div class="esc">
+        <span class="esc-h">Desde 1 hora</span>
+        <b>El primer paso</b>
+        <p>Una hora de aventura para probar la montaña sin gastarse el día: cars, caminos y mirador.</p>
+      </div>
+      <div class="esc">
+        <span class="esc-h">3 h 30 min</span>
+        <b>Media jornada</b>
+        <p>Más camino y más paisaje, con la parada de refrigerio y las fotos en los puntos altos.</p>
+      </div>
+      <div class="esc">
+        <span class="esc-h">Todo un día</span>
+        <b>Jornada completa</b>
+        <p>Varias experiencias en el mismo día: cars, río, pared y trocha, con el almuerzo resuelto.</p>
+      </div>
+    </div>
+
+    <div class="ali-grid rv">
+      <article class="aliado">
+        <div class="aliado-head">
+          <img src="assets/img/aliado-motoenduro.jpg" alt="Motoenduro: aventura sobre dos ruedas en el oriente de Caldas" loading="lazy">
+        </div>
+        <div class="aliado-body">
+          <span class="aliado-kick">Aventura sobre dos ruedas</span>
+          <h3>Motoenduro</h3>
+          <p>Trocha, barro y adrenalina en moto de enduro por los caminos que nosotros mismos recorremos.
+            Para quienes ya ruedan y quieren un reto de verdad, con acompañamiento de guía.</p>
+          <p class="aliado-nota">Video de una rodada: próximamente.</p>
+        </div>
+      </article>
+
+      <article class="aliado">
+        <div class="aliado-head">
+          <img src="assets/img/aliado-willexplora.jpg" alt="Will Explora: rápel y torrentismo, montaña adentro" loading="lazy">
+        </div>
+        <div class="aliado-body">
+          <span class="aliado-kick">Rápel y torrentismo</span>
+          <h3>Will Explora</h3>
+          <p>Montaña adentro: descensos en cuerda, cascadas y cañones con equipo y guía certificado.
+            La dosis vertical de la aventura, a minutos del pueblo.</p>
+          <div class="aliado-video">
+            <video controls preload="none" playsinline poster="assets/videos/aliado-willexplora.jpg">
+              <source src="assets/videos/aliado-willexplora.mp4" type="video/mp4">
+              Tu navegador no puede reproducir este video.
+            </video>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="ali-cta rv">
+      <div>
+        <h3>¿Armamos un plan combinado?</h3>
+        <p>Cuéntanos cuántos días tienes y con quién vienes: te proponemos la mezcla de cars, río y
+          trocha que mejor le quede al grupo, con precio y horario en un solo mensaje.</p>
+      </div>
+      <a class="btn btn-orange" target="_blank" rel="noopener"
+        href="https://wa.me/573152205659?text=Hola%20GO%20CARS%20Pensilvania%2C%20quiero%20un%20plan%20combinado%20con%20los%20aliados%20de%20aventura">Cotizar plan combinado</a>
+    </div>
+  </div>
+</section>
 <!-- ================= PREGUNTAS FRECUENTES (SEO / IA) ================= -->
 <section class="sec faq-sec" id="preguntas">
   <div class="wrap">
@@ -860,6 +969,7 @@ footer ul{list-style:none;display:grid;gap:9px}
           <li><a href="#planes">Planes y precios</a></li>
           <li><a href="catalogo.html" target="_blank" rel="noopener">Catálogo digital</a></li>
           <li><a href="#galeria">Galería</a></li>
+          <li><a href="#alianzas">Alianzas de aventura</a></li>
         </ul>
       </div>
       <div>
