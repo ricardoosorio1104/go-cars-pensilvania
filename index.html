@@ -1805,12 +1805,17 @@ window.addEventListener('load', ()=>{ heroVideo.pause(); vids.forEach(v=>v.pause
     let listo = false;
     const termina = (d, bien) => { if (listo) return; listo = true; bien ? ok(d) : fallo(d); };
     try{
+      /* 20 s de margen: el servidor a veces tarda y el navegador puede no dejar leer la respuesta
+         del POST (redirección de Apps Script). Si se pasa, se cancela y entra el respaldo. */
+      const ctl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+      const reloj = setTimeout(function(){ if (ctl) ctl.abort(); }, 20000);
       fetch(REG_API, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
-                       body: JSON.stringify(datos), redirect:'follow' })
+                       body: JSON.stringify(datos), redirect:'follow',
+                       signal: ctl ? ctl.signal : undefined })
         .then(r => r.text())
-        .then(txt => { let d = null; try{ d = JSON.parse(txt); }catch(e){ d = null; }
+        .then(txt => { clearTimeout(reloj); let d = null; try{ d = JSON.parse(txt); }catch(e){ d = null; }
                        if (d && d.ok) termina(d, true); else termina(d, false); })
-        .catch(() => porScript());
+        .catch(() => { clearTimeout(reloj); porScript(); });
     }catch(e){ porScript(); }
 
     function porScript(){
@@ -1824,7 +1829,9 @@ window.addEventListener('load', ()=>{ heroVideo.pause(); vids.forEach(v=>v.pause
       s.onerror = function(){ limpiar(); termina(null, false); };
       s.src = REG_API + '?' + qs + '&callback=' + nom;
       document.body.appendChild(s);
-      setTimeout(function(){ if (!listo){ limpiar(); termina(null, false); } }, 9000);
+      /* Antes eran 9 s y el servidor tarda ~7 s (a veces más): el cliente veía "no se pudo guardar"
+         cuando la fila YA estaba guardada. Ahora espera 35 s. */
+      setTimeout(function(){ if (!listo){ limpiar(); termina(null, false); } }, 35000);
     }
   }
 
@@ -1855,6 +1862,8 @@ window.addEventListener('load', ()=>{ heroVideo.pause(); vids.forEach(v=>v.pause
        y el cliente ve "recibimos tus datos" aunque NO se haya guardado nada. */
     const d = {
       action: 'registrar',
+      /* un identificador por envío: si llegan el POST y el respaldo, se guarda una sola vez */
+      uid: 'r' + Date.now() + Math.random().toString(36).slice(2, 8),
       nombre: q('#rg_nombre').value.trim(),
       identificacion: q('#rg_ident').value.trim(),
       celular: q('#rg_cel').value.trim(),
